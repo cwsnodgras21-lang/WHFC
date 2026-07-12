@@ -54,8 +54,6 @@ export function Topbar({ session, onMenuClick }: TopbarProps) {
           </Button>
         </form>
       </div>
-      {/* Thin multicolor brand rule */}
-      <div aria-hidden className="brand-rule-x" />
     </header>
   );
 }
