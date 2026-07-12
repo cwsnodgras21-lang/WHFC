@@ -1,0 +1,25 @@
+name: Cleanup merged branches
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete branches for merged PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr list --repo "$REPO" --state merged --limit 50 --json headRefName \
+            --jq '.[].headRefName' | while read -r branch; do
+              [ "$branch" = "main" ] && continue
+              gh api -X DELETE "repos/$REPO/git/refs/heads/$branch" >/dev/null 2>&1 || true
+            done
