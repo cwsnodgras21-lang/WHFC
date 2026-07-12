@@ -1,0 +1,51 @@
+---
+description: NolTurn development rules for Node, Next.js, Supabase, and Vercel projects
+alwaysApply: true
+---
+
+# NolTurn Development Rules
+
+This project belongs to NolTurn Solutions.
+
+## Stack
+
+- Node.js
+- Next.js
+- TypeScript
+- Supabase
+- Vercel
+
+## Forbidden unless explicitly requested
+
+- Quickbase
+- DCS
+- employer systems
+- unrelated platforms
+
+## Required behavior
+
+Before coding:
+- create an implementation plan
+- list affected files
+- list assumptions
+- identify database impact
+- identify security risks
+
+During coding:
+- make minimal file changes
+- avoid unrelated refactors
+- avoid unnecessary dependencies
+- preserve existing behavior
+- keep code readable
+
+For Supabase:
+- never expose service role keys in client code
+- consider RLS on every table change
+- validate user input before writes
+- document migrations clearly
+
+Before finishing:
+- review the diff
+- identify risks
+- provide test steps
+- provide rollback notes

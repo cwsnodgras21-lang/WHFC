@@ -1,0 +1,1 @@
+export const DISPENSE_HISTORY_PAGE_SIZE = 25;

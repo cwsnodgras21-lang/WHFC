@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "skills": {
+    "ui-ux-pro-max": {
+      "source": "local",
+      "sourceType": "project",
+      "skillPath": ".cursor/skills/ui-ux-pro-max/SKILL.md"
+    },
+    "webapp-testing": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/webapp-testing/SKILL.md",
+      "computedHash": "project-local-copy"
+    }
+  }
+}
