@@ -53,6 +53,24 @@ Full setup: [docs/SETUP.md](./docs/SETUP.md)
 
 ---
 
+## Development workflow
+
+This repo merges to `main` only through pull requests, gated by CI:
+
+```bash
+git checkout -b some-feature
+# make changes
+git add -A && git commit -m "..."
+git push -u origin some-feature
+gh pr create --fill
+```
+
+Opening the PR triggers auto-merge: once the `lint-typecheck-test` check passes, GitHub
+squash-merges the PR into `main` automatically and deletes the branch. No manual merge
+click required. If CI fails, the PR just waits until it's fixed.
+
+---
+
 ## Project structure
 
 ```
