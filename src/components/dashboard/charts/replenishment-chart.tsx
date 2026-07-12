@@ -92,8 +92,8 @@ export function ReplenishmentChart({ items }: { items: ReplenishmentItem[] }) {
             <Bar
               dataKey="suggestedOrderQuantity"
               fill={chartColors.replenishment}
-              radius={[0, 4, 4, 0]}
-              maxBarSize={22}
+              radius={[10, 10, 10, 10]}
+              maxBarSize={20}
               isAnimationActive={false}
             >
               <LabelList

@@ -32,6 +32,7 @@ import {
   FormSelect,
 } from "@/components/ui/form-field";
 import { PageSection } from "@/components/ui/page-section";
+import { OnHandSidebar } from "@/components/inventory/on-hand-sidebar";
 
 type TransferInventoryFormProps = {
   items: TransferItemOption[];
@@ -228,6 +229,7 @@ export function TransferInventoryForm({
       ) : null}
 
       {!formDisabled ? (
+      <div className="grid items-start gap-5 lg:grid-cols-[1fr_300px]">
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <FormSection
           title="Item and route"
@@ -306,30 +308,6 @@ export function TransferInventoryForm({
             </FormField>
           </div>
 
-          {sourceOnHand !== null || (destinationOnHand !== null && watchedToLocationId) ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {sourceOnHand !== null ? (
-                <div className={`readout${noSourceStock ? " readout-empty" : ""}`}>
-                  <span className="readout-label">On hand at source</span>
-                  <span className="readout-value">
-                    {formatQuantity(sourceOnHand)}{" "}
-                    {selectedItem?.unitAbbreviation ?? "units"}
-                  </span>
-                </div>
-              ) : null}
-
-              {destinationOnHand !== null && watchedToLocationId ? (
-                <div className="readout readout-empty">
-                  <span className="readout-label">On hand at destination</span>
-                  <span className="readout-value">
-                    {formatQuantity(destinationOnHand)}{" "}
-                    {selectedItem?.unitAbbreviation ?? "units"}
-                  </span>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
           {noSourceStock ? (
             <p className="form-hint text-[var(--color-attention)]">
               No stock at the source yet.{" "}
@@ -391,6 +369,34 @@ export function TransferInventoryForm({
           </div>
         </FormSection>
       </form>
+
+      <OnHandSidebar
+        cards={[
+          {
+            label: "On hand at source",
+            quantity: sourceOnHand,
+            unit: selectedItem?.unitAbbreviation ?? "units",
+            caption:
+              selectedItem && fromLocation
+                ? `${selectedItem.itemName} · ${fromLocation.locationName}`
+                : undefined,
+          },
+          ...(watchedToLocationId
+            ? [
+                {
+                  label: "On hand at destination",
+                  quantity: destinationOnHand,
+                  unit: selectedItem?.unitAbbreviation ?? "units",
+                  caption:
+                    selectedItem && toLocation
+                      ? `${selectedItem.itemName} · ${toLocation.locationName}`
+                      : undefined,
+                },
+              ]
+            : []),
+        ]}
+      />
+      </div>
       ) : null}
 
       <PageSection

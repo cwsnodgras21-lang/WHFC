@@ -40,6 +40,7 @@ import {
   FormSelect,
 } from "@/components/ui/form-field";
 import { PageSection } from "@/components/ui/page-section";
+import { OnHandSidebar } from "@/components/inventory/on-hand-sidebar";
 
 type ConsumeInventoryFormProps = {
   items: ConsumeItemOption[];
@@ -113,6 +114,11 @@ export function ConsumeInventoryForm({
     }
     return localOnHand[onHandKey(watchedItemId, watchedLocationId)] ?? 0;
   }, [localOnHand, watchedItemId, watchedLocationId]);
+
+  const selectedLocation = useMemo(
+    () => locations.find((location) => location.id === watchedLocationId),
+    [locations, watchedLocationId]
+  );
 
   // Active lots for the selected item + location, earliest-expiring first.
   const lotsForSelection = useMemo(() => {
@@ -271,6 +277,7 @@ export function ConsumeInventoryForm({
       ) : null}
 
       {!formDisabled ? (
+      <div className="grid items-start gap-5 lg:grid-cols-[1fr_300px]">
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <FormSection
           title="Item and location"
@@ -321,25 +328,6 @@ export function ConsumeInventoryForm({
               ))}
             </FormSelect>
           </FormField>
-
-          {currentOnHand !== null ? (
-            noStockHere ? (
-              <div className="readout readout-empty">
-                <span className="readout-label">On hand at this location</span>
-                <span className="readout-value">
-                  0 {selectedItem?.unitAbbreviation ?? "units"}
-                </span>
-              </div>
-            ) : (
-              <div className="readout">
-                <span className="readout-label">On hand at this location</span>
-                <span className="readout-value">
-                  {formatQuantity(currentOnHand)}{" "}
-                  {selectedItem?.unitAbbreviation ?? "units"}
-                </span>
-              </div>
-            )
-          ) : null}
 
           {noStockHere ? (
             <p className="form-hint text-[var(--color-attention)]">
@@ -507,6 +495,21 @@ export function ConsumeInventoryForm({
           </Button>
         </div>
       </form>
+
+      <OnHandSidebar
+        cards={[
+          {
+            label: "On hand at this location",
+            quantity: currentOnHand,
+            unit: selectedItem?.unitAbbreviation ?? "units",
+            caption:
+              selectedItem && selectedLocation
+                ? `${selectedItem.itemName} · ${selectedLocation.locationName}`
+                : undefined,
+          },
+        ]}
+      />
+      </div>
       ) : null}
 
       <PageSection

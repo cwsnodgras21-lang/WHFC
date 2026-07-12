@@ -7,16 +7,16 @@
  */
 export const chartColors = {
   // Stock-health status (reserved status hues, always shown with labels)
-  healthy: "#15803d", // --color-success (green)
-  low: "#d98a0a", // amber — low stock
-  out: "#c23b17", // brand red-orange — out of stock
+  healthy: "#4caf7a", // --color-success-border (green)
+  low: "#e0b400", // --color-caution-border (amber) — low stock
+  out: "#e59288", // --color-danger-border — out of stock
 
   // Inventory movement (two-series categorical)
-  received: "#16788e", // --color-primary (deep sky blue)
-  consumed: "#b24a12", // --color-attention (brown-orange)
+  received: "#0f6b80", // --color-primary (deep teal)
+  consumed: "#e8632a", // --color-sidebar-indicator (brand orange)
 
   // Replenishment priority (single-hue magnitude)
-  replenishment: "#b24a12", // --color-attention
+  replenishment: "#0f6b80", // --color-primary
 
   // Chart chrome
   grid: "#e5ddd5", // --color-border

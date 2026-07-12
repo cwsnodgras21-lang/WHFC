@@ -32,6 +32,7 @@ import {
   FormSelect,
 } from "@/components/ui/form-field";
 import { PageSection } from "@/components/ui/page-section";
+import { OnHandSidebar } from "@/components/inventory/on-hand-sidebar";
 
 type ReceiveInventoryFormProps = {
   items: ReceiveItemOption[];
@@ -103,6 +104,11 @@ export function ReceiveInventoryForm({
     }
     return localOnHand[onHandKey(watchedItemId, watchedLocationId)] ?? 0;
   }, [localOnHand, watchedItemId, watchedLocationId]);
+
+  const selectedLocation = useMemo(
+    () => locations.find((location) => location.id === watchedLocationId),
+    [locations, watchedLocationId]
+  );
 
   const onSubmit = handleSubmit((values) => {
     setServerError(null);
@@ -215,6 +221,7 @@ export function ReceiveInventoryForm({
       ) : null}
 
       {!formDisabled ? (
+      <div className="grid items-start gap-5 lg:grid-cols-[1fr_300px]">
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <FormSection
           title="Item and location"
@@ -265,16 +272,6 @@ export function ReceiveInventoryForm({
               ))}
             </FormSelect>
           </FormField>
-
-          {currentOnHand !== null ? (
-            <div className="readout">
-              <span className="readout-label">On hand at this location</span>
-              <span className="readout-value">
-                {formatQuantity(currentOnHand)}{" "}
-                {selectedItem?.unitAbbreviation ?? "units"}
-              </span>
-            </div>
-          ) : null}
         </FormSection>
 
         <FormSection
@@ -405,6 +402,21 @@ export function ReceiveInventoryForm({
           </Button>
         </div>
       </form>
+
+      <OnHandSidebar
+        cards={[
+          {
+            label: "On hand at this location",
+            quantity: currentOnHand,
+            unit: selectedItem?.unitAbbreviation ?? "units",
+            caption:
+              selectedItem && selectedLocation
+                ? `${selectedItem.itemName} · ${selectedLocation.locationName}`
+                : undefined,
+          },
+        ]}
+      />
+      </div>
       ) : null}
 
       <PageSection
