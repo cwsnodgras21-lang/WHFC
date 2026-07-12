@@ -29,12 +29,37 @@ type PriorityBadgeVariant = "danger" | "warning" | "caution" | "info";
 
 const PRIORITY_META: Record<
   TaskPriority,
-  { label: string; badge: PriorityBadgeVariant }
+  {
+    label: string;
+    badge: PriorityBadgeVariant;
+    iconBg: string;
+    iconColor: string;
+  }
 > = {
-  critical: { label: "Critical", badge: "danger" },
-  high: { label: "High", badge: "warning" },
-  medium: { label: "Medium", badge: "caution" },
-  low: { label: "Low", badge: "info" },
+  critical: {
+    label: "Critical",
+    badge: "danger",
+    iconBg: "var(--color-danger-bg)",
+    iconColor: "var(--color-danger)",
+  },
+  high: {
+    label: "High",
+    badge: "warning",
+    iconBg: "var(--color-attention-bg)",
+    iconColor: "var(--color-attention)",
+  },
+  medium: {
+    label: "Medium",
+    badge: "caution",
+    iconBg: "var(--color-caution-bg)",
+    iconColor: "var(--color-caution)",
+  },
+  low: {
+    label: "Low",
+    badge: "info",
+    iconBg: "var(--color-info-bg)",
+    iconColor: "var(--color-info)",
+  },
 };
 
 type TodayTasksCardProps = {
@@ -73,7 +98,8 @@ export function TodayTasksCard({ tasks }: TodayTasksCardProps) {
                 <div className="flex items-start gap-3">
                   <span
                     aria-hidden
-                    className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-muted)] text-[var(--color-fg-muted)]"
+                    className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                    style={{ background: meta.iconBg, color: meta.iconColor }}
                   >
                     <Icon className="h-5 w-5" />
                   </span>

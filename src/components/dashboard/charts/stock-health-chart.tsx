@@ -44,9 +44,10 @@ export function StockHealthChart({ counts }: { counts: StockHealthCounts }) {
                 data={segments}
                 dataKey="value"
                 nameKey="label"
-                innerRadius="64%"
+                innerRadius="68%"
                 outerRadius="92%"
-                paddingAngle={total > 0 ? 2 : 0}
+                cornerRadius={6}
+                paddingAngle={total > 0 ? 3 : 0}
                 startAngle={90}
                 endAngle={-270}
                 stroke={chartColors.surface}

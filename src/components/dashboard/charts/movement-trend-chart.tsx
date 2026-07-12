@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CartesianGrid,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -55,11 +54,6 @@ export function MovementTrendChart({ series }: { series: MovementDay[] }) {
             data={series}
             margin={{ top: 8, right: 12, bottom: 4, left: -12 }}
           >
-            <CartesianGrid
-              stroke={chartColors.grid}
-              strokeDasharray="2 4"
-              vertical={false}
-            />
             <XAxis
               dataKey="date"
               interval={tickInterval}
