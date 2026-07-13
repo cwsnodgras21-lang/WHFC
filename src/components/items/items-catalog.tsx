@@ -12,7 +12,7 @@ import { formatQuantity } from "@/lib/format/inventory";
 import { ItemFormDialog } from "@/components/items/item-form-dialog";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, LinkButton } from "@/components/ui/button";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FormField, FormInput, FormSelect } from "@/components/ui/form-field";
@@ -240,6 +240,12 @@ export function ItemsCatalog({
                           >
                             {canManage ? "Edit" : "View"}
                           </Button>
+                          <LinkButton
+                            href={`/items/${item.id}/sourcing`}
+                            variant="secondary"
+                          >
+                            Sourcing
+                          </LinkButton>
                           {canManage ? (
                             <Button
                               type="button"

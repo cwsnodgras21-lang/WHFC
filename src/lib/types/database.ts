@@ -481,6 +481,78 @@ export type Database = {
           },
         ]
       }
+      item_vendors: {
+        Row: {
+          created_at: string
+          id: string
+          is_preferred: boolean
+          item_id: string
+          last_order_date: string | null
+          lead_time_days: number | null
+          manufacturer: string | null
+          manufacturer_part_number: string | null
+          ordering_notes: string | null
+          ordering_url: string | null
+          pack_size: string | null
+          typical_cost: number | null
+          typical_order_quantity: number | null
+          updated_at: string
+          vendor_id: string
+          vendor_sku: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_preferred?: boolean
+          item_id: string
+          last_order_date?: string | null
+          lead_time_days?: number | null
+          manufacturer?: string | null
+          manufacturer_part_number?: string | null
+          ordering_notes?: string | null
+          ordering_url?: string | null
+          pack_size?: string | null
+          typical_cost?: number | null
+          typical_order_quantity?: number | null
+          updated_at?: string
+          vendor_id: string
+          vendor_sku?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_preferred?: boolean
+          item_id?: string
+          last_order_date?: string | null
+          lead_time_days?: number | null
+          manufacturer?: string | null
+          manufacturer_part_number?: string | null
+          ordering_notes?: string | null
+          ordering_url?: string | null
+          pack_size?: string | null
+          typical_cost?: number | null
+          typical_order_quantity?: number | null
+          updated_at?: string
+          vendor_id?: string
+          vendor_sku?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_vendors_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_vendors_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       items: {
         Row: {
           active: boolean
