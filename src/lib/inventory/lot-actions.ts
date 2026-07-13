@@ -11,6 +11,8 @@ import {
   adjustLotSchema,
   disposeLotSchema,
 } from "@/lib/validation/lot-actions";
+import { ACTIVITY_EVENTS } from "@/lib/activity/events";
+import { publishActivity } from "@/lib/activity/service";
 import type { Database } from "@/lib/types/database";
 
 type Client = SupabaseClient<Database>;
@@ -60,6 +62,24 @@ async function lotLocationId(
   return data?.location_id ?? null;
 }
 
+async function lotItemName(
+  supabase: Client,
+  lotId: string
+): Promise<string | null> {
+  try {
+    const { data } = await supabase
+      .from("inventory_lots")
+      .select("items(item_name)")
+      .eq("id", lotId)
+      .maybeSingle();
+    const items = (data as { items?: { item_name?: string } | null } | null)
+      ?.items;
+    return items?.item_name ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function executeDisposeLot(
   supabase: Client,
   session: AppSession,
@@ -94,6 +114,21 @@ export async function executeDisposeLot(
   if (error) {
     return { success: false, error: mapRpcError(error.message) };
   }
+
+  const itemName = await lotItemName(supabase, parsed.data.lotId);
+  const isExpired = parsed.data.reasonCode === "expired_disposal";
+  await publishActivity(supabase, {
+    module: isExpired ? "expiration" : "inventory",
+    eventType: isExpired
+      ? ACTIVITY_EVENTS.expiration.disposed
+      : ACTIVITY_EVENTS.inventory.consumed,
+    entityType: "inventory_lot",
+    entityId: parsed.data.lotId,
+    title: isExpired
+      ? `Disposed expired ${itemName ?? "stock"}`
+      : `Disposed damaged ${itemName ?? "stock"}`,
+    severity: "warning",
+  });
 
   return { success: true };
 }

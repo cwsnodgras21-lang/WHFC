@@ -10,6 +10,7 @@ import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { TodayTasksCard } from "@/components/dashboard/today-tasks-card";
 import { RecentActivity } from "@/components/activity/recent-activity";
 import type { ActivityFeedItem } from "@/lib/data/activity-feed";
+import type { ImagingHighlights } from "@/lib/data/imaging-page";
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
@@ -26,6 +27,7 @@ type DashboardContentProps = {
   summary: DashboardSummary;
   recentActivity: ActivityFeedItem[];
   recentActivityError: string | null;
+  imaging: ImagingHighlights | null;
   canReceive: boolean;
   canDispense: boolean;
   canManagePoDrafts: boolean;
@@ -36,6 +38,7 @@ export function DashboardContent({
   summary,
   recentActivity,
   recentActivityError,
+  imaging,
   canReceive,
   canDispense,
   canManagePoDrafts,
@@ -51,6 +54,7 @@ export function DashboardContent({
   const todayTasks = buildTodayTasks(summary, {
     canManageCounts,
     canManagePoDrafts,
+    imaging,
   });
 
   return (

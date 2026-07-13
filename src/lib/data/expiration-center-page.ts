@@ -27,10 +27,13 @@ export type ExpirationLotRow = {
   unitAbbreviation: string | null;
   status: LotStatus;
   daysUntilExpiration: number | null;
+  /** Earliest-expiring open lot for its item (FEFO) — pull this one first. */
+  useFirst: boolean;
 };
 
 export type ExpirationSummary = {
   expired: number;
+  expiring7: number;
   expiring30: number;
   expiring60: number;
   expiring90: number;
@@ -55,6 +58,7 @@ export type ExpirationCenterData = {
 
 const EMPTY_SUMMARY: ExpirationSummary = {
   expired: 0,
+  expiring7: 0,
   expiring30: 0,
   expiring60: 0,
   expiring90: 0,
@@ -151,9 +155,12 @@ export async function getExpirationCenterData(
           row.days_until_expiration === null
             ? null
             : Number(row.days_until_expiration),
+        useFirst: false,
       },
     ];
   });
+
+  markUseFirst(allDated);
 
   const summary = summarize(allDated);
   const rows = allDated.filter((row) =>
@@ -192,6 +199,8 @@ function summarize(rows: ExpirationLotRow[]): ExpirationSummary {
     if (days === null) continue;
     if (days < 0) {
       summary.expired += 1;
+    } else if (days <= 7) {
+      summary.expiring7 += 1;
     } else if (days <= 30) {
       summary.expiring30 += 1;
     } else if (days <= 60) {
@@ -201,4 +210,28 @@ function summarize(rows: ExpirationLotRow[]): ExpirationSummary {
     }
   }
   return summary;
+}
+
+/**
+ * Flags the earliest-expiring on-hand lot of each item as "use first" (FEFO),
+ * so staff know which specific lot to pull before it becomes waste. Ties on the
+ * same soonest date are all flagged.
+ */
+function markUseFirst(rows: ExpirationLotRow[]): void {
+  const earliestByItem = new Map<string, number>();
+  for (const row of rows) {
+    if (row.daysUntilExpiration === null) continue;
+    const current = earliestByItem.get(row.itemId);
+    if (current === undefined || row.daysUntilExpiration < current) {
+      earliestByItem.set(row.itemId, row.daysUntilExpiration);
+    }
+  }
+  for (const row of rows) {
+    if (
+      row.daysUntilExpiration !== null &&
+      earliestByItem.get(row.itemId) === row.daysUntilExpiration
+    ) {
+      row.useFirst = true;
+    }
+  }
 }

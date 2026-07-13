@@ -1,9 +1,12 @@
 import {
   AlertTriangle,
   CalendarClock,
+  CalendarDays,
   ClipboardList,
+  FileCheck,
   FileText,
   PackageMinus,
+  ScanLine,
   TrendingDown,
   type LucideIcon,
 } from "lucide-react";
@@ -23,6 +26,9 @@ const TASK_ICONS: Record<TaskIconKey, LucideIcon> = {
   reorder: TrendingDown,
   "low-stock": PackageMinus,
   "po-approve": FileText,
+  "imaging-appointment": CalendarDays,
+  "imaging-auth": FileCheck,
+  "imaging-overdue": ScanLine,
 };
 
 type PriorityBadgeVariant = "danger" | "warning" | "caution" | "info";
@@ -75,7 +81,7 @@ export function TodayTasksCard({ tasks }: TodayTasksCardProps) {
         className={`panel-header ${hasTasks ? "panel-header-attention" : "panel-header-success"}`}
       >
         <h2 id="today-tasks-heading" className="section-heading">
-          Today&apos;s Tasks
+          Action Center
         </h2>
         {hasTasks ? (
           <Badge variant="warning">{tasks.length} to do</Badge>
@@ -128,7 +134,7 @@ export function TodayTasksCard({ tasks }: TodayTasksCardProps) {
             ✅ You&apos;re all caught up!
           </p>
           <p className="mt-1 text-sm text-[var(--color-fg-muted)]">
-            No inventory actions require attention today.
+            No operational tasks require attention today.
           </p>
         </div>
       )}

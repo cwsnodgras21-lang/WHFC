@@ -69,8 +69,13 @@ function isPendingAuth(status: ImagingAuthorizationStatus): boolean {
   ).includes(status);
 }
 
+type HighlightInput = Pick<
+  ImagingOrderRow,
+  "status" | "authorizationStatus" | "appointmentDate"
+>;
+
 export function computeImagingHighlights(
-  rows: ImagingOrderRow[],
+  rows: HighlightInput[],
   today: string
 ): ImagingHighlights {
   const highlights: ImagingHighlights = { ...EMPTY_HIGHLIGHTS };
@@ -126,6 +131,38 @@ function applyFilters(
     }
     return true;
   });
+}
+
+/**
+ * Lightweight highlights fetch for the Action Center — only the columns needed
+ * to bucket appointments and count pending authorizations. Returns null when
+ * the caller cannot see imaging (inactive) or the read fails, so the Action
+ * Center can simply skip imaging tasks.
+ */
+export async function getImagingHighlights(
+  supabase: Client,
+  session: AppSession
+): Promise<ImagingHighlights | null> {
+  if (!session.profile.active) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("imaging_orders")
+    .select("status, authorization_status, appointment_date");
+
+  if (error || !data) {
+    return null;
+  }
+
+  return computeImagingHighlights(
+    data.map((row) => ({
+      status: row.status,
+      authorizationStatus: row.authorization_status,
+      appointmentDate: row.appointment_date,
+    })),
+    utcToday()
+  );
 }
 
 export async function getImagingPageData(

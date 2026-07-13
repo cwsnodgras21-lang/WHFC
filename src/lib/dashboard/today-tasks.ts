@@ -1,4 +1,5 @@
 import type { DashboardSummary } from "@/lib/data/dashboard";
+import type { ImagingHighlights } from "@/lib/data/imaging-page";
 import { isModuleEnabled } from "@/lib/modules/definitions";
 
 /**
@@ -23,7 +24,10 @@ export type TaskIconKey =
   | "count"
   | "reorder"
   | "low-stock"
-  | "po-approve";
+  | "po-approve"
+  | "imaging-appointment"
+  | "imaging-auth"
+  | "imaging-overdue";
 
 export type TodayTask = {
   /** Stable id — one task type can only appear once. */
@@ -38,10 +42,17 @@ export type TodayTask = {
   href: string;
 };
 
-/** Permission flags the caller already knows; used to hide role-gated tasks. */
+/**
+ * Cross-module context the Action Center draws on. Permission flags hide
+ * role-gated tasks; `imaging` is present only when the Imaging Log module is
+ * enabled and readable, so imaging builders self-disable when it is absent.
+ * A new module contributes tasks by adding an optional field here plus a
+ * builder below — the card never changes.
+ */
 export type TodayTaskContext = {
   canManageCounts: boolean;
   canManagePoDrafts: boolean;
+  imaging?: ImagingHighlights | null;
 };
 
 const PRIORITY_RANK: Record<TaskPriority, number> = {
@@ -169,6 +180,54 @@ const buildPoApprovalTask: TaskBuilder = (summary, ctx) => {
   };
 };
 
+/** Imaging appointments scheduled for today — timely, staff-facing work. */
+const buildImagingAppointmentsTask: TaskBuilder = (_summary, ctx) => {
+  const count = ctx.imaging?.appointmentsToday ?? 0;
+  if (count <= 0) return null;
+
+  return {
+    id: "imaging-appointments-today",
+    priority: "high",
+    icon: "imaging-appointment",
+    title: "Imaging appointments today",
+    description: `${count} imaging ${plural(count, "appointment is", "appointments are")} scheduled for today.`,
+    ctaLabel: "View imaging",
+    href: "/imaging",
+  };
+};
+
+/** Imaging orders whose appointment date has passed but are still open. */
+const buildImagingOverdueTask: TaskBuilder = (_summary, ctx) => {
+  const count = ctx.imaging?.overdueImaging ?? 0;
+  if (count <= 0) return null;
+
+  return {
+    id: "imaging-overdue",
+    priority: "high",
+    icon: "imaging-overdue",
+    title: "Follow up on overdue imaging",
+    description: `${count} imaging ${plural(count, "order is", "orders are")} past the appointment date without a result.`,
+    ctaLabel: "Review overdue",
+    href: "/imaging",
+  };
+};
+
+/** Insurance authorizations that still need to be chased. */
+const buildImagingAuthTask: TaskBuilder = (_summary, ctx) => {
+  const count = ctx.imaging?.pendingAuthorizations ?? 0;
+  if (count <= 0) return null;
+
+  return {
+    id: "imaging-pending-auth",
+    priority: "medium",
+    icon: "imaging-auth",
+    title: "Chase imaging authorizations",
+    description: `${count} imaging ${plural(count, "order is", "orders are")} waiting on insurance authorization.`,
+    ctaLabel: "Review authorizations",
+    href: "/imaging",
+  };
+};
+
 /**
  * Registered builders, in tiebreak order. Priority is the primary sort; builder
  * order here breaks ties between tasks of equal priority.
@@ -178,7 +237,10 @@ const TASK_BUILDERS: readonly TaskBuilder[] = [
   buildOpenCountTask,
   buildReorderTask,
   buildLowStockTask,
+  buildImagingAppointmentsTask,
+  buildImagingOverdueTask,
   buildExpiringSoonTask,
+  buildImagingAuthTask,
   buildPoApprovalTask,
 ];
 

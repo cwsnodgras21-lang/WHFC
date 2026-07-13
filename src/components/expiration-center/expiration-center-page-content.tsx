@@ -53,10 +53,16 @@ export function ExpirationCenterPageContent({
             tone: data.summary.expired > 0 ? "attention" : "success",
           },
           {
+            label: "Expiring in 7 days",
+            value: data.summary.expiring7,
+            hint: "Critical — use now",
+            tone: data.summary.expiring7 > 0 ? "attention" : "success",
+          },
+          {
             label: "Expiring in 30 days",
             value: data.summary.expiring30,
             hint: "Use or replace soon",
-            tone: data.summary.expiring30 > 0 ? "attention" : "success",
+            tone: data.summary.expiring30 > 0 ? "attention" : undefined,
           },
           {
             label: "Expiring in 60 days",
