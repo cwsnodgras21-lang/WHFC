@@ -8,6 +8,7 @@ export const MODULE_KEYS = [
   "po_drafts",
   "analytics",
   "integrations",
+  "imaging_log",
 ] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];

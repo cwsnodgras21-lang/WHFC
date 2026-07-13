@@ -290,6 +290,68 @@ export type Database = {
           },
         ]
       }
+      imaging_orders: {
+        Row: {
+          appointment_date: string | null
+          appointment_time: string | null
+          authorization_number: string | null
+          authorization_status: Database["public"]["Enums"]["imaging_authorization_status"]
+          created_at: string
+          created_by: string
+          date_ordered: string
+          id: string
+          imaging_location: string | null
+          imaging_type: string
+          notes: string | null
+          ordering_provider: string
+          patient_reference: string
+          status: Database["public"]["Enums"]["imaging_status"]
+          updated_at: string
+        }
+        Insert: {
+          appointment_date?: string | null
+          appointment_time?: string | null
+          authorization_number?: string | null
+          authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          created_at?: string
+          created_by: string
+          date_ordered?: string
+          id?: string
+          imaging_location?: string | null
+          imaging_type: string
+          notes?: string | null
+          ordering_provider: string
+          patient_reference: string
+          status?: Database["public"]["Enums"]["imaging_status"]
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string | null
+          appointment_time?: string | null
+          authorization_number?: string | null
+          authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          created_at?: string
+          created_by?: string
+          date_ordered?: string
+          id?: string
+          imaging_location?: string | null
+          imaging_type?: string
+          notes?: string | null
+          ordering_provider?: string
+          patient_reference?: string
+          status?: Database["public"]["Enums"]["imaging_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_lots: {
         Row: {
           created_at: string
@@ -1372,6 +1434,54 @@ export type Database = {
         Returns: string
       }
       assert_active_item: { Args: { p_item_id: string }; Returns: undefined }
+      create_imaging_order: {
+        Args: {
+          p_patient_reference: string
+          p_ordering_provider: string
+          p_imaging_type: string
+          p_imaging_location?: string | null
+          p_date_ordered?: string | null
+          p_appointment_date?: string | null
+          p_appointment_time?: string | null
+          p_status?: Database["public"]["Enums"]["imaging_status"]
+          p_authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          p_authorization_number?: string | null
+          p_notes?: string | null
+        }
+        Returns: string
+      }
+      update_imaging_order: {
+        Args: {
+          p_id: string
+          p_patient_reference: string
+          p_ordering_provider: string
+          p_imaging_type: string
+          p_imaging_location?: string | null
+          p_date_ordered?: string | null
+          p_appointment_date?: string | null
+          p_appointment_time?: string | null
+          p_status?: Database["public"]["Enums"]["imaging_status"]
+          p_authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          p_authorization_number?: string | null
+          p_notes?: string | null
+        }
+        Returns: string
+      }
+      set_imaging_order_status: {
+        Args: {
+          p_id: string
+          p_status: Database["public"]["Enums"]["imaging_status"]
+        }
+        Returns: string
+      }
+      set_imaging_authorization: {
+        Args: {
+          p_id: string
+          p_authorization_status: Database["public"]["Enums"]["imaging_authorization_status"]
+          p_authorization_number?: string | null
+        }
+        Returns: string
+      }
       record_activity: {
         Args: {
           p_module: Database["public"]["Enums"]["activity_module"]
@@ -1504,6 +1614,18 @@ export type Database = {
         | "system"
       activity_severity: "info" | "success" | "warning" | "critical"
       dispense_event_source: "manual" | "emr" | "import" | "api"
+      imaging_authorization_status:
+        | "not_required"
+        | "required"
+        | "pending"
+        | "approved"
+        | "denied"
+      imaging_status:
+        | "ordered"
+        | "scheduled"
+        | "completed"
+        | "results_received"
+        | "cancelled"
       lot_status: "active" | "expiring_soon" | "expired" | "depleted"
       physical_count_status: "in_progress" | "completed" | "cancelled"
       purchase_order_draft_status: "draft" | "submitted" | "approved" | "ordered" | "cancelled"

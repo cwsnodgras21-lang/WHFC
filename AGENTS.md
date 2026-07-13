@@ -22,6 +22,16 @@ Read NolTurn standards before coding:
 
 Do **not** collect, store, display, transmit, or infer protected health information or patient information. Do not add unrestricted notes or attachment fields. Consumption is recorded only as aggregate inventory quantity changes.
 
+### Imaging Log carve-out
+
+The Imaging Log module is an operational scheduling tracker (not an EHR). To stay within the data boundary it deliberately **minimizes** patient data:
+
+- `patient_reference` is a short, length-bounded operational label (MRN or initials) — **never** a full patient name. It is the minimum key needed to reconcile an order with a paper/EMR chart.
+- No date of birth or clinical detail is stored.
+- `notes` is a short (≤280 char) **non-clinical** scheduling field, not a free-form clinical note.
+
+Any future imaging work must preserve these constraints. Do not add name, DOB, diagnosis, or result-content fields.
+
 ## Stack
 
 - Next.js 16 App Router + TypeScript (strict)
