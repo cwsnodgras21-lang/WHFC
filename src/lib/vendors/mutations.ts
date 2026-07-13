@@ -2,6 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { canManageVendors } from "@/lib/auth/permissions";
 import type { AppSession } from "@/lib/auth/session";
+import { ACTIVITY_EVENTS } from "@/lib/activity/events";
+import { publishActivity } from "@/lib/activity/service";
 import {
   createVendorSchema,
   quickCreateVendorSchema,
@@ -163,6 +165,15 @@ export async function insertVendor(
     return { success: false, error: mapDbError(error.message) };
   }
 
+  await publishActivity(supabase, {
+    module: "vendors",
+    eventType: ACTIVITY_EVENTS.vendors.created,
+    entityType: "vendor",
+    entityId: data.id,
+    title: `Added vendor ${input.name}`,
+    severity: "info",
+  });
+
   return { success: true, vendorId: data.id };
 }
 
@@ -185,6 +196,15 @@ export async function updateVendorRecord(
   if (error) {
     return { success: false, error: mapDbError(error.message) };
   }
+
+  await publishActivity(supabase, {
+    module: "vendors",
+    eventType: ACTIVITY_EVENTS.vendors.updated,
+    entityType: "vendor",
+    entityId: data.id,
+    title: `Updated vendor ${input.name}`,
+    severity: "info",
+  });
 
   return { success: true, vendorId: data.id };
 }

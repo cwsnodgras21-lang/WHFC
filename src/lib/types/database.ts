@@ -34,6 +34,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          module: Database["public"]["Enums"]["activity_module"]
+          occurred_at: string
+          severity: Database["public"]["Enums"]["activity_severity"]
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          module: Database["public"]["Enums"]["activity_module"]
+          occurred_at?: string
+          severity?: Database["public"]["Enums"]["activity_severity"]
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          module?: Database["public"]["Enums"]["activity_module"]
+          occurred_at?: string
+          severity?: Database["public"]["Enums"]["activity_severity"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -1041,6 +1094,31 @@ export type Database = {
       }
     }
     Views: {
+      activity_feed: {
+        Row: {
+          actor_id: string | null
+          actor_name: string | null
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_type: string | null
+          id: string | null
+          metadata: Json | null
+          module: Database["public"]["Enums"]["activity_module"] | null
+          occurred_at: string | null
+          severity: Database["public"]["Enums"]["activity_severity"] | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_lot_stock: {
         Row: {
           category_id: string | null
@@ -1294,6 +1372,19 @@ export type Database = {
         Returns: string
       }
       assert_active_item: { Args: { p_item_id: string }; Returns: undefined }
+      record_activity: {
+        Args: {
+          p_module: Database["public"]["Enums"]["activity_module"]
+          p_event_type: string
+          p_title: string
+          p_entity_type?: string | null
+          p_entity_id?: string | null
+          p_description?: string | null
+          p_severity?: Database["public"]["Enums"]["activity_severity"]
+          p_metadata?: Json | null
+        }
+        Returns: string
+      }
       assert_active_location: {
         Args: { p_location_id: string }
         Returns: undefined
@@ -1403,6 +1494,15 @@ export type Database = {
       }
     }
     Enums: {
+      activity_module:
+        | "inventory"
+        | "expiration"
+        | "vendors"
+        | "purchasing"
+        | "imaging"
+        | "counts"
+        | "system"
+      activity_severity: "info" | "success" | "warning" | "critical"
       dispense_event_source: "manual" | "emr" | "import" | "api"
       lot_status: "active" | "expiring_soon" | "expired" | "depleted"
       physical_count_status: "in_progress" | "completed" | "cancelled"

@@ -8,6 +8,8 @@ import { ReplenishmentChart } from "@/components/dashboard/charts/replenishment-
 import { StockHealthChart } from "@/components/dashboard/charts/stock-health-chart";
 import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { TodayTasksCard } from "@/components/dashboard/today-tasks-card";
+import { RecentActivity } from "@/components/activity/recent-activity";
+import type { ActivityFeedItem } from "@/lib/data/activity-feed";
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
@@ -18,16 +20,12 @@ import { SummaryStats } from "@/components/ui/summary-stats";
 import type { DashboardSummary } from "@/lib/data/dashboard";
 import { buildTodayTasks } from "@/lib/dashboard/today-tasks";
 import { isModuleEnabled } from "@/lib/modules/definitions";
-import {
-  formatDateTime,
-  formatLocationDetail,
-  formatQuantity,
-  formatSignedQuantityWithUnit,
-  formatTransactionType,
-} from "@/lib/format/inventory";
+import { formatQuantity } from "@/lib/format/inventory";
 
 type DashboardContentProps = {
   summary: DashboardSummary;
+  recentActivity: ActivityFeedItem[];
+  recentActivityError: string | null;
   canReceive: boolean;
   canDispense: boolean;
   canManagePoDrafts: boolean;
@@ -36,6 +34,8 @@ type DashboardContentProps = {
 
 export function DashboardContent({
   summary,
+  recentActivity,
+  recentActivityError,
   canReceive,
   canDispense,
   canManagePoDrafts,
@@ -384,102 +384,10 @@ export function DashboardContent({
         )}
       </section>
 
-      <section aria-labelledby="recent-activity-heading" className="page-section">
-        <div className="section-heading-row">
-          <h2 id="recent-activity-heading" className="section-heading">
-            Recent activity
-          </h2>
-          <Link href="/transactions" className="link-subtle">
-            View all activity
-          </Link>
-        </div>
-
-        {summary.recentTransactions.length === 0 ? (
-          <EmptyState
-            title="No activity yet"
-            description="Receiving, using, transferring, or counting stock will show up here."
-            action={
-              canReceive ? (
-                <LinkButton href="/receive" variant="primary">
-                  Receive your first shipment
-                </LinkButton>
-              ) : undefined
-            }
-          />
-        ) : (
-          <DataTableShell>
-            <DataTable className="data-table-compact">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Item</th>
-                  <th scope="col" className="hidden md:table-cell">
-                    Location
-                  </th>
-                  <th scope="col" className="hidden sm:table-cell">
-                    Type
-                  </th>
-                  <th scope="col" className="text-right">
-                    Quantity
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {summary.recentTransactions.map((tx) => {
-                  const location = formatLocationDetail(
-                    tx.location_name,
-                    tx.room,
-                    tx.cabinet
-                  );
-
-                  return (
-                    <tr key={tx.id ?? `${tx.occurred_at}-${tx.transaction_type}`}>
-                      <td className="muted whitespace-nowrap">
-                        {formatDateTime(tx.occurred_at)}
-                      </td>
-                      <td>
-                        <div className="table-cell-stack">
-                          <span className="table-cell-primary">
-                            {tx.item_name ?? "—"}
-                          </span>
-                          {tx.internal_sku ? (
-                            <span className="table-cell-secondary mono">
-                              {tx.internal_sku}
-                            </span>
-                          ) : null}
-                        </div>
-                      </td>
-                      <td className="hidden md:table-cell">
-                        <div className="table-cell-stack">
-                          <span className="table-cell-primary">
-                            {location.primary}
-                          </span>
-                          {location.secondary ? (
-                            <span className="table-cell-secondary">
-                              {location.secondary}
-                            </span>
-                          ) : null}
-                        </div>
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {formatTransactionType(tx.transaction_type)}
-                      </td>
-                      <td className="numeric whitespace-nowrap font-medium">
-                        {formatSignedQuantityWithUnit(
-                          tx.quantity,
-                          tx.transaction_type,
-                          tx.reason_code,
-                          tx.unit_abbreviation
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </DataTable>
-          </DataTableShell>
-        )}
-      </section>
+      <RecentActivity
+        items={recentActivity}
+        loadError={recentActivityError}
+      />
     </div>
   );
 }
