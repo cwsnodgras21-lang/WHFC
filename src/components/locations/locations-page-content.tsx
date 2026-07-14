@@ -3,11 +3,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
 import type { LocationsPageData } from "@/lib/data/locations-page";
+import type { ActiveStatusFilter } from "@/lib/validation/catalog-filters";
 
 export function LocationsPageContent({
   data,
+  initialStatusFilter = "all",
 }: {
   data: LocationsPageData;
+  initialStatusFilter?: ActiveStatusFilter;
 }) {
   return (
     <>
@@ -37,6 +40,7 @@ export function LocationsPageContent({
           <LocationsCatalog
             locations={data.locations}
             canManage={data.canManage}
+            initialStatusFilter={initialStatusFilter}
           />
         </>
       )}

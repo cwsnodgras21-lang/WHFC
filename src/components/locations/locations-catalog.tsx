@@ -59,13 +59,16 @@ function matchesStatus(location: LocationRow, filter: StatusFilter): boolean {
 export function LocationsCatalog({
   locations,
   canManage,
+  initialStatusFilter = "all",
 }: {
   locations: LocationRow[];
   canManage: boolean;
+  initialStatusFilter?: StatusFilter;
 }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilter>(initialStatusFilter);
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [selected, setSelected] = useState<LocationRow | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
