@@ -8,7 +8,7 @@ import { LocationFormDialog } from "@/components/locations/location-form-dialog"
 import type { LocationRow } from "@/lib/data/locations-page";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, LinkButton } from "@/components/ui/button";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FormField, FormInput, FormSelect } from "@/components/ui/form-field";
@@ -148,9 +148,14 @@ export function LocationsCatalog({
         id="locations-catalog-heading"
         action={
           canManage ? (
-            <Button type="button" onClick={openCreate}>
-              New location
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <LinkButton href="/locations/qr-codes" variant="secondary">
+                Print QR codes
+              </LinkButton>
+              <Button type="button" onClick={openCreate}>
+                New location
+              </Button>
+            </div>
           ) : null
         }
       >
@@ -253,6 +258,12 @@ export function LocationsCatalog({
                           className="flex flex-wrap gap-2"
                           onClick={(event) => event.stopPropagation()}
                         >
+                          <LinkButton
+                            href={`/locations/${location.id}`}
+                            variant="secondary"
+                          >
+                            Stock
+                          </LinkButton>
                           <Button
                             type="button"
                             variant="secondary"
