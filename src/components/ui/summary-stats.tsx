@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { cn } from "@/lib/cn";
 
 export type SummaryStat = {
@@ -5,6 +7,8 @@ export type SummaryStat = {
   value: number | string;
   hint?: string;
   tone?: "default" | "attention" | "success";
+  /** When set, the whole stat cell navigates to this href. */
+  href?: string;
 };
 
 type SummaryStatsProps = {
@@ -25,7 +29,20 @@ export function SummaryStats({
   return (
     <dl className={cn("summary-band", className)} aria-label={ariaLabel}>
       {stats.map((stat) => (
-        <div key={stat.label} className="summary-stat">
+        <div
+          key={stat.label}
+          className={cn(
+            "summary-stat",
+            stat.href && "summary-stat-link"
+          )}
+        >
+          {stat.href ? (
+            <Link
+              href={stat.href}
+              className="summary-stat-stretched-link"
+              aria-label={`View ${stat.label}`}
+            />
+          ) : null}
           <dd
             className={cn(
               "summary-stat-value",

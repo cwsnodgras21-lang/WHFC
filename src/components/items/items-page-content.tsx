@@ -3,12 +3,17 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
 import type { ItemsPageData } from "@/lib/data/items-page";
+import type { ActiveStatusFilter } from "@/lib/validation/catalog-filters";
 
 type ItemsPageContentProps = {
   data: ItemsPageData;
+  initialStatusFilter?: ActiveStatusFilter;
 };
 
-export function ItemsPageContent({ data }: ItemsPageContentProps) {
+export function ItemsPageContent({
+  data,
+  initialStatusFilter = "all",
+}: ItemsPageContentProps) {
   return (
     <div className="space-y-6">
       <PageHeader
@@ -44,6 +49,7 @@ export function ItemsPageContent({ data }: ItemsPageContentProps) {
             items={data.items}
             referenceData={data.referenceData}
             canManage={data.canManage}
+            initialStatusFilter={initialStatusFilter}
           />
         </>
       )}

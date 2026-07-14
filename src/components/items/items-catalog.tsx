@@ -26,6 +26,7 @@ type ItemsCatalogProps = {
   items: ItemCatalogRow[];
   referenceData: ReferenceDataSnapshot;
   canManage: boolean;
+  initialStatusFilter?: StatusFilter;
 };
 
 function matchesSearch(item: ItemCatalogRow, query: string): boolean {
@@ -53,10 +54,12 @@ export function ItemsCatalog({
   items,
   referenceData,
   canManage,
+  initialStatusFilter = "all",
 }: ItemsCatalogProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilter>(initialStatusFilter);
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [editingItem, setEditingItem] = useState<ItemCatalogRow | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

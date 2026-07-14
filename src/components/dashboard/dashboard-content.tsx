@@ -12,7 +12,6 @@ import { RecentActivity } from "@/components/activity/recent-activity";
 import type { ActivityFeedItem } from "@/lib/data/activity-feed";
 import type { ImagingHighlights } from "@/lib/data/imaging-page";
 import { Badge } from "@/components/ui/badge";
-import { LinkButton } from "@/components/ui/button";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
@@ -28,8 +27,6 @@ type DashboardContentProps = {
   recentActivity: ActivityFeedItem[];
   recentActivityError: string | null;
   imaging: ImagingHighlights | null;
-  canReceive: boolean;
-  canDispense: boolean;
   canManagePoDrafts: boolean;
   canManageCounts: boolean;
 };
@@ -39,15 +36,11 @@ export function DashboardContent({
   recentActivity,
   recentActivityError,
   imaging,
-  canReceive,
-  canDispense,
   canManagePoDrafts,
   canManageCounts,
 }: DashboardContentProps) {
   const modules = summary.enabledModules;
   const hasLowStock = summary.belowReorderCount > 0;
-  const showDispenseAction =
-    canDispense && isModuleEnabled(modules, "procedure_kits");
   const showAnalytics = isModuleEnabled(modules, "analytics");
   const showReorderSuggestions = isModuleEnabled(modules, "reorder_suggestions");
 
@@ -57,25 +50,17 @@ export function DashboardContent({
     imaging,
   });
 
+  const lowStockHref = showReorderSuggestions
+    ? "/reorder-suggestions"
+    : showAnalytics
+      ? "/reorder-report"
+      : "/#needs-attention";
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Inventory overview"
         description="See what is on hand, what needs attention, and what to do next."
-        actions={
-          <div className="flex flex-wrap gap-2">
-            {canReceive ? (
-              <LinkButton href="/receive" variant="primary">
-                Receive stock
-              </LinkButton>
-            ) : null}
-            {showDispenseAction ? (
-              <LinkButton href="/dispense" variant="secondary">
-                Dispense kit
-              </LinkButton>
-            ) : null}
-          </div>
-        }
       />
 
       {summary.errors.length > 0 ? (
@@ -84,6 +69,37 @@ export function DashboardContent({
           message={summary.errors.join(" ")}
         />
       ) : null}
+
+      <SummaryStats
+        aria-label="Inventory summary"
+        stats={[
+          {
+            label: "Active items",
+            value: summary.activeItems,
+            hint: "Catalog items in use",
+            href: "/items?status=active",
+          },
+          {
+            label: "Low-stock items",
+            value: summary.belowReorderCount,
+            hint: hasLowStock ? "Below minimum level" : "Stock levels look good",
+            tone: hasLowStock ? "attention" : "success",
+            href: lowStockHref,
+          },
+          {
+            label: "Active locations",
+            value: summary.activeLocations,
+            hint: "Storage areas tracked",
+            href: "/locations?status=active",
+          },
+          {
+            label: "Recent activity",
+            value: summary.recentActivityCount,
+            hint: "Inventory changes · 30 days",
+            href: "/transactions",
+          },
+        ]}
+      />
 
       <TodayTasksCard tasks={todayTasks} />
 
@@ -97,11 +113,13 @@ export function DashboardContent({
             label: "Dispenses today",
             value: summary.dispensesToday,
             hint: "Kit dispenses · UTC day",
+            href: "/dispense/history",
           },
           {
             label: "Dispenses this week",
             value: summary.dispensesThisWeek,
             hint: "Since Monday UTC",
+            href: "/dispense/history",
           },
           {
             label: "Top procedure (month)",
@@ -109,6 +127,7 @@ export function DashboardContent({
             hint: summary.topProceduresThisMonth[0]
               ? `${summary.topProceduresThisMonth[0].dispenseCount} dispenses`
               : "No dispenses this month",
+            href: "/dispense/history",
           },
           {
             label: "Runway alerts",
@@ -122,37 +141,11 @@ export function DashboardContent({
               )
                 ? "attention"
                 : "success",
+            href: "/#needs-attention",
           },
         ]}
         />
       ) : null}
-
-      <SummaryStats
-        aria-label="Inventory summary"
-        stats={[
-          {
-            label: "Active items",
-            value: summary.activeItems,
-            hint: "Catalog items in use",
-          },
-          {
-            label: "Low-stock items",
-            value: summary.belowReorderCount,
-            hint: hasLowStock ? "Below minimum level" : "Stock levels look good",
-            tone: hasLowStock ? "attention" : "success",
-          },
-          {
-            label: "Active locations",
-            value: summary.activeLocations,
-            hint: "Storage areas tracked",
-          },
-          {
-            label: "Recent activity",
-            value: summary.recentActivityCount,
-            hint: "Inventory changes · 30 days",
-          },
-        ]}
-      />
 
       {showAnalytics ? (
         <section aria-label="Inventory analytics" className="analytics-grid">
@@ -297,7 +290,11 @@ export function DashboardContent({
       ) : null}
 
       {/* Needs attention — compact, top 5 by urgency */}
-      <section aria-labelledby="needs-attention-heading" className="panel">
+      <section
+        id="needs-attention"
+        aria-labelledby="needs-attention-heading"
+        className="panel scroll-mt-6"
+      >
         <div
           className={`panel-header ${hasLowStock ? "panel-header-attention" : "panel-header-success"}`}
         >

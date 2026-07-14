@@ -555,6 +555,38 @@ h4 {
   background: var(--color-surface);
 }
 
+.summary-stat-link {
+  position: relative;
+  transition: background-color 120ms ease;
+}
+
+.summary-stat-link:hover {
+  background: var(--color-surface-muted);
+}
+
+.summary-stat-link:has(:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.summary-stat-stretched-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.summary-stat-link .summary-stat-label::after {
+  content: " →";
+  color: var(--color-fg-faint);
+  font-weight: 500;
+}
+
+.summary-stat-link:hover .summary-stat-label::after {
+  color: var(--color-primary);
+}
+
 .summary-stat-value {
   font-family: var(--font-heading);
   font-size: 1.875rem;
