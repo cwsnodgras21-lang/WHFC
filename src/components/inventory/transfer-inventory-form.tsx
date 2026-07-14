@@ -171,7 +171,10 @@ export function TransferInventoryForm({
 
       setRecentTransfers((prev) => [
         {
-          id: result.transferOutId,
+          id:
+            result.transferOutId ??
+            result.transactionGroupId ??
+            `transfer-${Date.now()}`,
           itemName: itemLabel,
           fromLocationName: fromLabel,
           toLocationName: toLabel,

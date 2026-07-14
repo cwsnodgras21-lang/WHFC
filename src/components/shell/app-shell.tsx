@@ -5,6 +5,8 @@ import { useState } from "react";
 import type { AppSession } from "@/lib/auth/session";
 import { getNavGroupsForRole } from "@/lib/navigation";
 import type { OrganizationModules } from "@/lib/modules/types";
+import { ConfirmProvider } from "@/components/ui/confirm-dialog";
+import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
 
@@ -25,22 +27,26 @@ export function AppShell({
   const navGroups = getNavGroupsForRole(session.profile.role, enabledModules);
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-bg)]">
-      <Sidebar
-        groups={navGroups}
-        mobileOpen={mobileOpen}
-        logoAvailable={logoAvailable}
-        onMobileClose={() => setMobileOpen(false)}
-      />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar
-          session={session}
-          onMenuClick={() => setMobileOpen(true)}
-        />
-        <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
-          <div className="mx-auto w-full max-w-6xl space-y-6">{children}</div>
-        </main>
-      </div>
-    </div>
+    <ToastProvider>
+      <ConfirmProvider>
+        <div className="flex min-h-screen bg-[var(--color-bg)]">
+          <Sidebar
+            groups={navGroups}
+            mobileOpen={mobileOpen}
+            logoAvailable={logoAvailable}
+            onMobileClose={() => setMobileOpen(false)}
+          />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <Topbar
+              session={session}
+              onMenuClick={() => setMobileOpen(true)}
+            />
+            <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+              <div className="mx-auto w-full max-w-6xl space-y-6">{children}</div>
+            </main>
+          </div>
+        </div>
+      </ConfirmProvider>
+    </ToastProvider>
   );
 }

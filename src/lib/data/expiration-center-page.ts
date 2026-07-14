@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { canConsumeInventory, canManageItems } from "@/lib/auth/permissions";
+import { canConsumeInventory, canManageItems, canTransferInventory } from "@/lib/auth/permissions";
 import type { AppSession } from "@/lib/auth/session";
 import {
   expirationBucketMatches,
@@ -53,6 +53,7 @@ export type ExpirationCenterData = {
   locations: FilterOption[];
   canDispose: boolean;
   canAdjust: boolean;
+  canTransfer: boolean;
   loadError: string | null;
 };
 
@@ -82,6 +83,7 @@ export async function getExpirationCenterData(
       locations: [],
       canDispose: false,
       canAdjust: false,
+      canTransfer: false,
       loadError: null,
     };
   }
@@ -187,6 +189,7 @@ export async function getExpirationCenterData(
     })),
     canDispose: canConsumeInventory(session.profile.role, session.profile.active),
     canAdjust: canManageItems(session.profile.role, session.profile.active),
+    canTransfer: canTransferInventory(session.profile.role, session.profile.active),
     loadError: errors.length > 0 ? errors.join(" ") : null,
   };
 }

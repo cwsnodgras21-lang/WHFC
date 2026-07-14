@@ -1,7 +1,10 @@
+import Link from "next/link";
+
 import { ExpirationFiltersForm } from "@/components/expiration-center/expiration-filters-form";
 import { ExpirationLotsTable } from "@/components/expiration-center/expiration-lots-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { LinkButton } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageSection } from "@/components/ui/page-section";
 import { SummaryStats } from "@/components/ui/summary-stats";
@@ -40,7 +43,12 @@ export function ExpirationCenterPageContent({
     <div className="space-y-6">
       <PageHeader
         title="Expiration center"
-        description="Find expiring and expired stock, then dispose, adjust, or reorder it."
+        description="Find expiring and expired stock, then dispose, adjust, transfer, or reorder it."
+        actions={
+          <LinkButton href="/expiration/history" variant="secondary">
+            Expiration history
+          </LinkButton>
+        }
       />
 
       <SummaryStats
@@ -109,12 +117,25 @@ export function ExpirationCenterPageContent({
           ) : (
             <ExpirationLotsTable
               rows={data.rows}
+              locations={data.locations}
               canDispose={data.canDispose}
               canAdjust={data.canAdjust}
+              canTransfer={data.canTransfer}
             />
           )}
         </PageSection>
       )}
+
+      <p className="text-sm text-[var(--color-fg-muted)]">
+        Looking for past disposals and reviews?{" "}
+        <Link
+          href="/expiration/history"
+          className="font-medium text-[var(--color-primary)] hover:underline"
+        >
+          Open expiration history
+        </Link>
+        .
+      </p>
     </div>
   );
 }
