@@ -277,7 +277,9 @@ h4 {
   border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-fg);
-  font-size: 0.9375rem;
+  /* 16px minimum: iOS Safari auto-zooms the viewport when a focused input is
+     below 16px. Keeping it at 1rem avoids that zoom on every form. */
+  font-size: 1rem;
   transition:
     border-color 150ms ease,
     box-shadow 150ms ease;
@@ -337,7 +339,8 @@ h4 {
   border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-fg);
-  font-size: 0.9375rem;
+  /* 16px to prevent iOS focus-zoom (see .form-input). */
+  font-size: 1rem;
   transition:
     border-color 150ms ease,
     box-shadow 150ms ease;
@@ -922,6 +925,9 @@ h4 {
 /* ------------------------------------------------------------------ */
 .table-shell {
   overflow-x: auto;
+  /* Momentum scrolling for wide tables on touch devices. */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   background: var(--color-surface);

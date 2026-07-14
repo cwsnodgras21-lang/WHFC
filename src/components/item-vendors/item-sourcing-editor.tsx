@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageSection } from "@/components/ui/page-section";
 import { formatDate } from "@/lib/format/inventory";
+import { safeExternalHref } from "@/lib/security/safe-url";
 
 function detail(label: string, value: string | number | null | undefined) {
   if (value === null || value === undefined || value === "") return null;
@@ -46,6 +47,7 @@ export function ItemSourcingEditor({ data }: { data: ItemSourcingData }) {
   );
 
   const preferred = sources.find((s) => s.isPreferred) ?? null;
+  const preferredHref = safeExternalHref(preferred?.orderingUrl);
 
   const openAdd = () => {
     setEditing(null);
@@ -129,9 +131,9 @@ export function ItemSourcingEditor({ data }: { data: ItemSourcingData }) {
                 {detail("Manufacturer", preferred.manufacturer)}
                 {detail("Mfr part #", preferred.manufacturerPartNumber)}
               </dl>
-              {preferred.orderingUrl ? (
+              {preferredHref ? (
                 <a
-                  href={preferred.orderingUrl}
+                  href={preferredHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block text-sm font-medium text-[var(--color-primary)] hover:underline"
@@ -245,9 +247,9 @@ export function ItemSourcingEditor({ data }: { data: ItemSourcingData }) {
                   {detail("Manufacturer", source.manufacturer)}
                   {detail("Mfr part #", source.manufacturerPartNumber)}
                 </dl>
-                {source.orderingUrl ? (
+                {safeExternalHref(source.orderingUrl) ? (
                   <a
-                    href={source.orderingUrl}
+                    href={safeExternalHref(source.orderingUrl) ?? undefined}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block text-sm font-medium text-[var(--color-primary)] hover:underline"
