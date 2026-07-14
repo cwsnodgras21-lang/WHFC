@@ -1368,6 +1368,54 @@ h4 {
   color: var(--color-fg);
 }
 
+/* Location QR sheet */
+.qr-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.qr-sheet-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg, 0.75rem);
+}
+
+.qr-sheet-code {
+  width: 10rem;
+  max-width: 100%;
+}
+
+.qr-sheet-code svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+}
+
+.qr-sheet-name {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-fg);
+}
+
+.qr-sheet-room {
+  font-size: 0.875rem;
+  color: var(--color-fg-muted);
+}
+
+.qr-sheet-hint {
+  font-size: 0.75rem;
+  color: var(--color-fg-muted);
+}
+
 /* Screen reader only */
 .sr-only {
   position: absolute;
@@ -1395,8 +1443,26 @@ h4 {
 @media print {
   aside,
   header.sticky,
-  .reorder-report-no-print {
+  .reorder-report-no-print,
+  .qr-sheet-no-print {
     display: none !important;
+  }
+
+  .qr-sheet-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .qr-sheet-card {
+    break-inside: avoid;
+    border: 1px dashed #999;
+    background: #ffffff !important;
+  }
+
+  .qr-sheet-name,
+  .qr-sheet-room,
+  .qr-sheet-hint {
+    color: #000000 !important;
   }
 
   .po-draft-no-print {
