@@ -17,6 +17,7 @@ export const LOT_STATUS_LABELS: Record<LotStatus, string> = {
 export const EXPIRATION_BUCKETS = [
   "all",
   "expired",
+  "expiring_7",
   "expiring_30",
   "expiring_60",
   "expiring_90",
@@ -27,15 +28,63 @@ export type ExpirationBucket = (typeof EXPIRATION_BUCKETS)[number];
 export const EXPIRATION_BUCKET_LABELS: Record<ExpirationBucket, string> = {
   all: "All dated lots",
   expired: "Expired",
+  expiring_7: "Expiring in 7 days",
   expiring_30: "Expiring in 30 days",
   expiring_60: "Expiring in 60 days",
   expiring_90: "Expiring in 90 days",
 };
 
-const BUCKET_WINDOW_DAYS: Record<"expiring_30" | "expiring_60" | "expiring_90", number> = {
+const BUCKET_WINDOW_DAYS: Record<
+  "expiring_7" | "expiring_30" | "expiring_60" | "expiring_90",
+  number
+> = {
+  expiring_7: 7,
   expiring_30: 30,
   expiring_60: 60,
   expiring_90: 90,
+};
+
+/**
+ * Color-coded urgency tier for a lot, shared across the expiration center,
+ * dashboard, and Action Center so the whole app speaks one visual language.
+ * Tiers are cumulative windows from today (critical ⊂ warning ⊂ soon).
+ */
+export type ExpirationUrgency =
+  | "expired"
+  | "critical"
+  | "warning"
+  | "soon"
+  | "ok";
+
+export function expirationUrgency(
+  daysUntilExpiration: number | null
+): ExpirationUrgency {
+  if (daysUntilExpiration === null) return "ok";
+  if (daysUntilExpiration < 0) return "expired";
+  if (daysUntilExpiration <= 7) return "critical";
+  if (daysUntilExpiration <= 30) return "warning";
+  if (daysUntilExpiration <= 90) return "soon";
+  return "ok";
+}
+
+export const EXPIRATION_URGENCY_LABELS: Record<ExpirationUrgency, string> = {
+  expired: "Expired",
+  critical: "Expires ≤ 7 days",
+  warning: "Expires ≤ 30 days",
+  soon: "Expires ≤ 90 days",
+  ok: "OK",
+};
+
+/** Badge tone per urgency tier (maps to the shared Badge variants). */
+export const EXPIRATION_URGENCY_BADGE: Record<
+  ExpirationUrgency,
+  "danger" | "warning" | "caution" | "info" | "default"
+> = {
+  expired: "danger",
+  critical: "danger",
+  warning: "warning",
+  soon: "caution",
+  ok: "default",
 };
 
 /**

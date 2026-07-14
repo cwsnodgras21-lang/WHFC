@@ -34,6 +34,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          module: Database["public"]["Enums"]["activity_module"]
+          occurred_at: string
+          severity: Database["public"]["Enums"]["activity_severity"]
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          module: Database["public"]["Enums"]["activity_module"]
+          occurred_at?: string
+          severity?: Database["public"]["Enums"]["activity_severity"]
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          module?: Database["public"]["Enums"]["activity_module"]
+          occurred_at?: string
+          severity?: Database["public"]["Enums"]["activity_severity"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -237,6 +290,68 @@ export type Database = {
           },
         ]
       }
+      imaging_orders: {
+        Row: {
+          appointment_date: string | null
+          appointment_time: string | null
+          authorization_number: string | null
+          authorization_status: Database["public"]["Enums"]["imaging_authorization_status"]
+          created_at: string
+          created_by: string
+          date_ordered: string
+          id: string
+          imaging_location: string | null
+          imaging_type: string
+          notes: string | null
+          ordering_provider: string
+          patient_reference: string
+          status: Database["public"]["Enums"]["imaging_status"]
+          updated_at: string
+        }
+        Insert: {
+          appointment_date?: string | null
+          appointment_time?: string | null
+          authorization_number?: string | null
+          authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          created_at?: string
+          created_by: string
+          date_ordered?: string
+          id?: string
+          imaging_location?: string | null
+          imaging_type: string
+          notes?: string | null
+          ordering_provider: string
+          patient_reference: string
+          status?: Database["public"]["Enums"]["imaging_status"]
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string | null
+          appointment_time?: string | null
+          authorization_number?: string | null
+          authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          created_at?: string
+          created_by?: string
+          date_ordered?: string
+          id?: string
+          imaging_location?: string | null
+          imaging_type?: string
+          notes?: string | null
+          ordering_provider?: string
+          patient_reference?: string
+          status?: Database["public"]["Enums"]["imaging_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_lots: {
         Row: {
           created_at: string
@@ -362,6 +477,78 @@ export type Database = {
             columns: ["performed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_vendors: {
+        Row: {
+          created_at: string
+          id: string
+          is_preferred: boolean
+          item_id: string
+          last_order_date: string | null
+          lead_time_days: number | null
+          manufacturer: string | null
+          manufacturer_part_number: string | null
+          ordering_notes: string | null
+          ordering_url: string | null
+          pack_size: string | null
+          typical_cost: number | null
+          typical_order_quantity: number | null
+          updated_at: string
+          vendor_id: string
+          vendor_sku: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_preferred?: boolean
+          item_id: string
+          last_order_date?: string | null
+          lead_time_days?: number | null
+          manufacturer?: string | null
+          manufacturer_part_number?: string | null
+          ordering_notes?: string | null
+          ordering_url?: string | null
+          pack_size?: string | null
+          typical_cost?: number | null
+          typical_order_quantity?: number | null
+          updated_at?: string
+          vendor_id: string
+          vendor_sku?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_preferred?: boolean
+          item_id?: string
+          last_order_date?: string | null
+          lead_time_days?: number | null
+          manufacturer?: string | null
+          manufacturer_part_number?: string | null
+          ordering_notes?: string | null
+          ordering_url?: string | null
+          pack_size?: string | null
+          typical_cost?: number | null
+          typical_order_quantity?: number | null
+          updated_at?: string
+          vendor_id?: string
+          vendor_sku?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_vendors_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_vendors_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -1041,6 +1228,31 @@ export type Database = {
       }
     }
     Views: {
+      activity_feed: {
+        Row: {
+          actor_id: string | null
+          actor_name: string | null
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_type: string | null
+          id: string | null
+          metadata: Json | null
+          module: Database["public"]["Enums"]["activity_module"] | null
+          occurred_at: string | null
+          severity: Database["public"]["Enums"]["activity_severity"] | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_lot_stock: {
         Row: {
           category_id: string | null
@@ -1294,6 +1506,67 @@ export type Database = {
         Returns: string
       }
       assert_active_item: { Args: { p_item_id: string }; Returns: undefined }
+      create_imaging_order: {
+        Args: {
+          p_patient_reference: string
+          p_ordering_provider: string
+          p_imaging_type: string
+          p_imaging_location?: string | null
+          p_date_ordered?: string | null
+          p_appointment_date?: string | null
+          p_appointment_time?: string | null
+          p_status?: Database["public"]["Enums"]["imaging_status"]
+          p_authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          p_authorization_number?: string | null
+          p_notes?: string | null
+        }
+        Returns: string
+      }
+      update_imaging_order: {
+        Args: {
+          p_id: string
+          p_patient_reference: string
+          p_ordering_provider: string
+          p_imaging_type: string
+          p_imaging_location?: string | null
+          p_date_ordered?: string | null
+          p_appointment_date?: string | null
+          p_appointment_time?: string | null
+          p_status?: Database["public"]["Enums"]["imaging_status"]
+          p_authorization_status?: Database["public"]["Enums"]["imaging_authorization_status"]
+          p_authorization_number?: string | null
+          p_notes?: string | null
+        }
+        Returns: string
+      }
+      set_imaging_order_status: {
+        Args: {
+          p_id: string
+          p_status: Database["public"]["Enums"]["imaging_status"]
+        }
+        Returns: string
+      }
+      set_imaging_authorization: {
+        Args: {
+          p_id: string
+          p_authorization_status: Database["public"]["Enums"]["imaging_authorization_status"]
+          p_authorization_number?: string | null
+        }
+        Returns: string
+      }
+      record_activity: {
+        Args: {
+          p_module: Database["public"]["Enums"]["activity_module"]
+          p_event_type: string
+          p_title: string
+          p_entity_type?: string | null
+          p_entity_id?: string | null
+          p_description?: string | null
+          p_severity?: Database["public"]["Enums"]["activity_severity"]
+          p_metadata?: Json | null
+        }
+        Returns: string
+      }
       assert_active_location: {
         Args: { p_location_id: string }
         Returns: undefined
@@ -1403,7 +1676,28 @@ export type Database = {
       }
     }
     Enums: {
+      activity_module:
+        | "inventory"
+        | "expiration"
+        | "vendors"
+        | "purchasing"
+        | "imaging"
+        | "counts"
+        | "system"
+      activity_severity: "info" | "success" | "warning" | "critical"
       dispense_event_source: "manual" | "emr" | "import" | "api"
+      imaging_authorization_status:
+        | "not_required"
+        | "required"
+        | "pending"
+        | "approved"
+        | "denied"
+      imaging_status:
+        | "ordered"
+        | "scheduled"
+        | "completed"
+        | "results_received"
+        | "cancelled"
       lot_status: "active" | "expiring_soon" | "expired" | "depleted"
       physical_count_status: "in_progress" | "completed" | "cancelled"
       purchase_order_draft_status: "draft" | "submitted" | "approved" | "ordered" | "cancelled"

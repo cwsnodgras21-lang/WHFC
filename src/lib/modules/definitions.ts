@@ -73,6 +73,14 @@ export const MODULE_DEFINITIONS: readonly ModuleDefinition[] = [
     defaultEnabled: false,
     locked: false,
   },
+  {
+    key: "imaging_log",
+    label: "Imaging log",
+    description:
+      "Track imaging orders through scheduling, completion, results, and insurance authorization.",
+    defaultEnabled: true,
+    locked: false,
+  },
 ] as const;
 
 export const MODULE_DEFINITION_BY_KEY: Record<ModuleKey, ModuleDefinition> =

@@ -4,6 +4,7 @@ import {
   compareLotsFefo,
   deriveLotStatus,
   expirationBucketMatches,
+  expirationUrgency,
   sortLotsFefo,
   type FefoLot,
 } from "@/lib/lots/expiration";
@@ -13,7 +14,27 @@ import {
   type ExpirationLot,
 } from "@/lib/dashboard/analytics";
 
+describe("expirationUrgency", () => {
+  it("maps day counts to cumulative urgency tiers", () => {
+    expect(expirationUrgency(null)).toBe("ok");
+    expect(expirationUrgency(-1)).toBe("expired");
+    expect(expirationUrgency(0)).toBe("critical");
+    expect(expirationUrgency(7)).toBe("critical");
+    expect(expirationUrgency(8)).toBe("warning");
+    expect(expirationUrgency(30)).toBe("warning");
+    expect(expirationUrgency(31)).toBe("soon");
+    expect(expirationUrgency(90)).toBe("soon");
+    expect(expirationUrgency(91)).toBe("ok");
+  });
+});
+
 describe("expirationBucketMatches", () => {
+  it("matches the 7-day window", () => {
+    expect(expirationBucketMatches(7, "expiring_7")).toBe(true);
+    expect(expirationBucketMatches(8, "expiring_7")).toBe(false);
+    expect(expirationBucketMatches(-1, "expiring_7")).toBe(false);
+  });
+
   it("puts everything in the 'all' bucket", () => {
     expect(expirationBucketMatches(-10, "all")).toBe(true);
     expect(expirationBucketMatches(500, "all")).toBe(true);

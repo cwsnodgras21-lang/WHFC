@@ -159,3 +159,20 @@ export function canManageModuleSettings(role: UserRole, active: boolean): boolea
   }
   return role === "administrator";
 }
+
+export const MANAGE_IMAGING_ROLES = [
+  "administrator",
+  "inventory_manager",
+  "staff",
+] as const satisfies readonly UserRole[];
+
+export function canManageImaging(role: UserRole, active: boolean): boolean {
+  if (!active) {
+    return false;
+  }
+  return (MANAGE_IMAGING_ROLES as readonly UserRole[]).includes(role);
+}
+
+export function canViewImaging(active: boolean): boolean {
+  return active;
+}

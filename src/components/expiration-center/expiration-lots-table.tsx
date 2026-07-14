@@ -9,7 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
 import { AdjustLotDialog } from "@/components/expiration-center/adjust-lot-dialog";
 import { DisposeLotDialog } from "@/components/expiration-center/dispose-lot-dialog";
-import { LOT_STATUS_LABELS, type LotStatus } from "@/lib/lots/expiration";
+import {
+  EXPIRATION_URGENCY_BADGE,
+  EXPIRATION_URGENCY_LABELS,
+  expirationUrgency,
+} from "@/lib/lots/expiration";
 import {
   formatDate,
   formatDaysUntilExpiration,
@@ -23,11 +27,17 @@ type ExpirationLotsTableProps = {
   canAdjust: boolean;
 };
 
-function statusVariant(status: LotStatus): "danger" | "warning" | "default" {
-  if (status === "expired") return "danger";
-  if (status === "expiring_soon") return "warning";
-  return "default";
-}
+/** Left-border accent that carries the urgency color down the row. */
+const URGENCY_ACCENT: Record<
+  ReturnType<typeof expirationUrgency>,
+  string
+> = {
+  expired: "var(--color-danger)",
+  critical: "var(--color-danger)",
+  warning: "var(--color-attention)",
+  soon: "var(--color-caution)",
+  ok: "transparent",
+};
 
 export function ExpirationLotsTable({
   rows,
@@ -70,11 +80,24 @@ export function ExpirationLotsTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {rows.map((row) => {
+              const urgency = expirationUrgency(row.daysUntilExpiration);
+              return (
               <tr key={row.lotId}>
-                <td>
+                <td
+                  style={{
+                    boxShadow: `inset 3px 0 0 0 ${URGENCY_ACCENT[urgency]}`,
+                  }}
+                >
                   <div className="table-cell-stack">
-                    <span className="table-cell-primary">{row.itemName}</span>
+                    <span className="table-cell-primary">
+                      {row.itemName}
+                      {row.useFirst ? (
+                        <Badge variant="info" className="ml-2 align-middle">
+                          Use first
+                        </Badge>
+                      ) : null}
+                    </span>
                     {row.internalSku ? (
                       <span className="table-cell-secondary mono">
                         {row.internalSku}
@@ -104,8 +127,8 @@ export function ExpirationLotsTable({
                   ) : null}
                 </td>
                 <td>
-                  <Badge variant={statusVariant(row.status)}>
-                    {LOT_STATUS_LABELS[row.status]}
+                  <Badge variant={EXPIRATION_URGENCY_BADGE[urgency]}>
+                    {EXPIRATION_URGENCY_LABELS[urgency]}
                   </Badge>
                 </td>
                 <td>
@@ -137,7 +160,8 @@ export function ExpirationLotsTable({
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </DataTable>
       </DataTableShell>

@@ -9,6 +9,7 @@ import {
   FileText,
   FlaskConical,
   LayoutDashboard,
+  ScanLine,
   Layers,
   MapPin,
   Package,
@@ -19,7 +20,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 
-export type NavGroupId = "inventory" | "reporting" | "administration";
+export type NavGroupId = "inventory" | "clinic" | "reporting" | "administration";
 
 export type NavItem = {
   href: string;
@@ -40,6 +41,7 @@ export type NavGroup = {
 
 export const NAV_GROUP_ORDER: { id: NavGroupId; label: string }[] = [
   { id: "inventory", label: "Inventory" },
+  { id: "clinic", label: "Clinic operations" },
   { id: "reporting", label: "Reporting" },
   { id: "administration", label: "Administration" },
 ];
@@ -105,6 +107,13 @@ export const NAV_ITEMS: NavItem[] = [
     icon: ClipboardList,
     group: "inventory",
     roles: ["administrator", "inventory_manager"],
+  },
+  {
+    href: "/imaging",
+    label: "Imaging Log",
+    icon: ScanLine,
+    group: "clinic",
+    module: "imaging_log",
   },
   { href: "/transactions", label: "Transactions", icon: ScrollText, group: "reporting" },
   {

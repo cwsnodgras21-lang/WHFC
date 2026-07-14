@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { canReceiveInventory } from "@/lib/auth/permissions";
 import type { AppSession } from "@/lib/auth/session";
 import { fetchOnHandAtLocation } from "@/lib/data/inventory";
+import { publishInventoryReceived } from "@/lib/activity/inventory";
 import {
   assertLocationNotLockedByPhysicalCount,
   LOCATION_COUNT_LOCK_MESSAGE,
@@ -127,6 +128,12 @@ export async function submitReceiveInventory(
     input.itemId,
     input.locationId
   );
+
+  await publishInventoryReceived(supabase, {
+    itemId: input.itemId,
+    quantity: input.quantity,
+    locationId: input.locationId,
+  });
 
   return {
     success: true,
