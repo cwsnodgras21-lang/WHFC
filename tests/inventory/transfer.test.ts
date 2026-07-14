@@ -36,7 +36,7 @@ const readOnlySession: AppSession = {
 
 function createMockSupabase(options: {
   rpcResult?: {
-    data: Record<string, string> | null;
+    data: Record<string, string | number> | null;
     error: { message: string } | null;
   };
   onHandSequence?: number[];
@@ -173,6 +173,25 @@ describe("submitTransferInventory", () => {
       p_quantity: 2,
       p_transaction_date: "2026-07-05T19:30:00.000Z",
     });
+  });
+
+  it("accepts lot-aware RPC payloads that only return transaction_group_id", async () => {
+    const supabase = createMockSupabase({
+      onHandSequence: [10, 8, 12],
+      rpcResult: {
+        data: { transaction_group_id: "group-1" },
+        error: null,
+      },
+    });
+
+    const result = await submitTransferInventory(supabase, validInput);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.transactionGroupId).toBe("group-1");
+      expect(result.transferOutId).toBeNull();
+      expect(result.transferInId).toBeNull();
+    }
   });
 
   it("blocks transfer when quantity exceeds source on-hand before RPC", async () => {

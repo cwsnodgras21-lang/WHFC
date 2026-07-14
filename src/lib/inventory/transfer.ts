@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { ACTIVITY_EVENTS } from "@/lib/activity/events";
+import { publishActivity } from "@/lib/activity/service";
 import { canTransferInventory } from "@/lib/auth/permissions";
 import type { AppSession } from "@/lib/auth/session";
 import { fetchOnHandAtLocation } from "@/lib/data/inventory";
@@ -19,14 +21,16 @@ import {
 type Client = SupabaseClient<Database>;
 
 type TransferRpcPayload = {
-  transfer_out_id: string;
-  transfer_in_id: string;
+  transferOutId: string | null;
+  transferInId: string | null;
+  transactionGroupId: string | null;
 };
 
 export type TransferInventorySuccess = {
   success: true;
-  transferOutId: string;
-  transferInId: string;
+  transferOutId: string | null;
+  transferInId: string | null;
+  transactionGroupId: string | null;
   quantityTransferred: number;
   updatedOnHandAtSource: number;
   updatedOnHandAtDestination: number;
@@ -47,14 +51,18 @@ function parseTransferRpcResult(data: unknown): TransferRpcPayload | null {
   }
 
   const record = data as Record<string, unknown>;
-  if (
-    typeof record.transfer_out_id === "string" &&
-    typeof record.transfer_in_id === "string"
-  ) {
-    return {
-      transfer_out_id: record.transfer_out_id,
-      transfer_in_id: record.transfer_in_id,
-    };
+  const transferOutId =
+    typeof record.transfer_out_id === "string" ? record.transfer_out_id : null;
+  const transferInId =
+    typeof record.transfer_in_id === "string" ? record.transfer_in_id : null;
+  const transactionGroupId =
+    typeof record.transaction_group_id === "string"
+      ? record.transaction_group_id
+      : null;
+
+  // Legacy RPC returned out/in ids; lot-aware RPC returns transaction_group_id.
+  if (transferOutId || transferInId || transactionGroupId) {
+    return { transferOutId, transferInId, transactionGroupId };
   }
 
   return null;
@@ -169,10 +177,26 @@ export async function submitTransferInventory(
     ]
   );
 
+  await publishActivity(supabase, {
+    module: "inventory",
+    eventType: ACTIVITY_EVENTS.inventory.transferred,
+    entityType: "item",
+    entityId: input.itemId,
+    title: `Transferred ${formatQuantity(input.quantity)} units`,
+    severity: "info",
+    metadata: {
+      from_location_id: input.fromLocationId,
+      to_location_id: input.toLocationId,
+      quantity: input.quantity,
+      transaction_group_id: transferIds.transactionGroupId,
+    },
+  });
+
   return {
     success: true,
-    transferOutId: transferIds.transfer_out_id,
-    transferInId: transferIds.transfer_in_id,
+    transferOutId: transferIds.transferOutId,
+    transferInId: transferIds.transferInId,
+    transactionGroupId: transferIds.transactionGroupId,
     quantityTransferred: input.quantity,
     updatedOnHandAtSource,
     updatedOnHandAtDestination,

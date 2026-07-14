@@ -70,6 +70,8 @@ type RecentActivityProps = {
   /** Max rows to render per filter view. */
   maxItems?: number;
   title?: string;
+  /** When false, hide the module filter tabs (e.g. a fixed-module history page). */
+  showFilters?: boolean;
 };
 
 export function RecentActivity({
@@ -77,6 +79,7 @@ export function RecentActivity({
   loadError = null,
   maxItems = 20,
   title = "Recent activity",
+  showFilters = true,
 }: RecentActivityProps) {
   const [filter, setFilter] = useState<FilterValue>("all");
 
@@ -98,6 +101,7 @@ export function RecentActivity({
         </h2>
       </div>
 
+      {showFilters ? (
       <div
         role="tablist"
         aria-label="Filter recent activity"
@@ -117,7 +121,7 @@ export function RecentActivity({
               className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                 active
                   ? "border-transparent bg-[var(--color-primary)] text-[var(--color-primary-fg)]"
-                  : "border-[var(--color-border)] text-[var(--color-fg-muted)] hover:bg-[var(--color-surface-muted)]"
+                  : "border-[var(--color-border)] text-[var(--color-fg-muted)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-fg)]"
               }`}
             >
               {label}
@@ -125,6 +129,7 @@ export function RecentActivity({
           );
         })}
       </div>
+      ) : null}
 
       {loadError ? (
         <p className="px-3 py-6 text-sm text-[var(--color-danger)]">
