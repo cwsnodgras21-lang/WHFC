@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { isSafeHttpUrl } from "@/lib/security/safe-url";
+
 const optionalText = (max: number) =>
   z.string().trim().max(max, "Too long.").optional();
 
@@ -36,7 +38,11 @@ export const itemVendorFormSchema = z.object({
   orderingUrl: z
     .union([
       z.literal(""),
-      z.string().trim().url("Enter a valid URL.").max(500, "Too long."),
+      z
+        .string()
+        .trim()
+        .max(500, "Too long.")
+        .refine(isSafeHttpUrl, "Enter a valid http(s) URL."),
     ])
     .optional(),
 });
