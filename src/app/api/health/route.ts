@@ -12,7 +12,6 @@ export async function GET() {
     const response = await fetch(`${supabaseUrl}/rest/v1/`, {
       headers: {
         apikey: anonKey,
-        authorization: `Bearer ${anonKey}`,
       },
       cache: "no-store",
       signal: AbortSignal.timeout(5_000),
