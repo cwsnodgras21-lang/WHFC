@@ -14,10 +14,13 @@ export async function GET() {
   try {
     const supabaseUrl = getSupabaseUrl();
     const anonKey = getSupabaseAnonKey();
-    const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/health_check`, {
+      method: "POST",
       headers: {
         apikey: anonKey,
+        "content-type": "application/json",
       },
+      body: "{}",
       cache: "no-store",
       signal: AbortSignal.timeout(5_000),
     });
