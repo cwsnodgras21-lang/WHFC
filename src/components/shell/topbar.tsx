@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, MessageSquarePlus } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { logoutAction } from "@/lib/auth/actions";
@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button";
 type TopbarProps = {
   session: AppSession;
   onMenuClick: () => void;
+  onFeedbackClick: () => void;
 };
 
-export function Topbar({ session, onMenuClick }: TopbarProps) {
+export function Topbar({ session, onMenuClick, onFeedbackClick }: TopbarProps) {
   const pathname = usePathname();
   const pageLabel = getNavLabelForPath(pathname);
   const displayName =
@@ -47,6 +48,17 @@ export function Topbar({ session, onMenuClick }: TopbarProps) {
             {ROLE_LABELS[session.profile.role]}
           </p>
         </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className="shrink-0"
+          onClick={onFeedbackClick}
+        >
+          <MessageSquarePlus className="h-4 w-4" aria-hidden />
+          <span className="hidden sm:inline">Feedback</span>
+          <span className="sr-only sm:hidden">Send feedback</span>
+        </Button>
 
         <form action={logoutAction}>
           <Button type="submit" variant="secondary" className="shrink-0">

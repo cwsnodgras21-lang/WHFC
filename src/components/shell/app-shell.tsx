@@ -9,6 +9,7 @@ import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
+import { FeedbackDialog } from "@/components/feedback/feedback-dialog";
 
 type AppShellProps = {
   session: AppSession;
@@ -24,6 +25,7 @@ export function AppShell({
   children,
 }: AppShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const navGroups = getNavGroupsForRole(session.profile.role, enabledModules);
 
   return (
@@ -40,11 +42,16 @@ export function AppShell({
             <Topbar
               session={session}
               onMenuClick={() => setMobileOpen(true)}
+              onFeedbackClick={() => setFeedbackOpen(true)}
             />
             <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
               <div className="mx-auto w-full max-w-6xl space-y-6">{children}</div>
             </main>
           </div>
+          <FeedbackDialog
+            open={feedbackOpen}
+            onClose={() => setFeedbackOpen(false)}
+          />
         </div>
       </ConfirmProvider>
     </ToastProvider>
