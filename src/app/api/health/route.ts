@@ -5,6 +5,11 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   let database: "reachable" | "unreachable" = "unreachable";
+  let databaseHttpStatus: number | null = null;
+  const configuration = {
+    url: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+    key: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+  };
 
   try {
     const supabaseUrl = getSupabaseUrl();
@@ -16,6 +21,7 @@ export async function GET() {
       cache: "no-store",
       signal: AbortSignal.timeout(5_000),
     });
+    databaseHttpStatus = response.status;
     database = response.ok ? "reachable" : "unreachable";
   } catch (error) {
     console.error("[health] Supabase connectivity check failed", error);
@@ -26,6 +32,8 @@ export async function GET() {
     {
       status: healthy ? "ok" : "degraded",
       database,
+      databaseHttpStatus,
+      configuration,
       version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ?? "local",
     },
     {
