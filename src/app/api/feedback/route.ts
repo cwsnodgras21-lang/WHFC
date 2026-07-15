@@ -6,7 +6,7 @@ import { feedbackFormSchema } from "@/lib/validation/feedback";
 export const runtime = "nodejs";
 
 const APP_SLUG = "white-house-family-care";
-const DEFAULT_NOLTURN_FEEDBACK_URL = "https://nolturn.io/api/ops/feedback";
+const DEFAULT_NOLTURN_FEEDBACK_URL = "https://nolturn.nolturn.io/api/ops/feedback";
 const MAX_BODY_BYTES = 16 * 1024;
 
 export async function POST(request: NextRequest) {
