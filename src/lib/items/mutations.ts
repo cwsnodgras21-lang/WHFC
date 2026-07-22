@@ -156,6 +156,7 @@ export async function insertItem(
       track_expiration: input.trackExpiration,
       track_lot_number: input.trackLotNumber,
       expiration_warning_days: input.expirationWarningDays,
+      pack_quantity: input.packQuantity ?? null,
     })
     .select("id")
     .single();
@@ -210,6 +211,7 @@ export async function updateItemRecord(
       track_expiration: input.trackExpiration,
       track_lot_number: input.trackLotNumber,
       expiration_warning_days: input.expirationWarningDays,
+      pack_quantity: input.packQuantity ?? null,
     })
     .eq("id", input.id)
     .select("id")

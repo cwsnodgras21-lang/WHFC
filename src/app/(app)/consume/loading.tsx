@@ -8,8 +8,8 @@ export default function ConsumeLoading() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Consume stock"
-        description="Record clinic use and disposal of consumable supplies from an active location."
+        title="Use stock"
+        description="Record supplies used in the clinic — pick the item, location, and quantity."
       />
       <div className="form-section animate-pulse">
         <div className="h-5 w-40 rounded bg-[var(--color-border-subtle)]" />

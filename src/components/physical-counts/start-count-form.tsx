@@ -13,7 +13,6 @@ type StartCountFormProps = {
   locations: Array<{
     id: string;
     locationName: string;
-    room: string | null;
     hasActiveCount: boolean;
   }>;
 };
@@ -77,7 +76,6 @@ export function StartCountForm({ locations }: StartCountFormProps) {
                 disabled={location.hasActiveCount}
               >
                 {location.locationName}
-                {location.room ? ` — ${location.room}` : ""}
                 {location.hasActiveCount ? " (count in progress)" : ""}
               </option>
             ))}

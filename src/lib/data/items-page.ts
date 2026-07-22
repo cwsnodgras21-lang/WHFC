@@ -24,6 +24,7 @@ export type ItemCatalogRow = {
   trackExpiration: boolean;
   trackLotNumber: boolean;
   expirationWarningDays: number;
+  packQuantity: number | null;
   hasTransactions: boolean;
 };
 
@@ -105,7 +106,7 @@ export async function getItemsPageData(
       supabase
         .from("items")
         .select(
-          "id, item_name, internal_sku, reorder_point, par_level, active, category_id, unit_of_measure_id, preferred_vendor_id, track_expiration, track_lot_number, expiration_warning_days"
+          "id, item_name, internal_sku, reorder_point, par_level, active, category_id, unit_of_measure_id, preferred_vendor_id, track_expiration, track_lot_number, expiration_warning_days, pack_quantity"
         )
         .order("item_name"),
       supabase.from("categories").select("id, name, active").order("name"),
@@ -166,6 +167,7 @@ export async function getItemsPageData(
       trackExpiration: row.track_expiration,
       trackLotNumber: row.track_lot_number,
       expirationWarningDays: Number(row.expiration_warning_days),
+      packQuantity: row.pack_quantity,
       hasTransactions: txItemIds.has(row.id),
     };
   });
@@ -192,6 +194,7 @@ export function itemToFormDefaults(item: ItemCatalogRow): {
   trackExpiration: boolean;
   trackLotNumber: boolean;
   expirationWarningDays: string;
+  packQuantity: string;
 } {
   return {
     itemName: item.itemName,
@@ -205,5 +208,6 @@ export function itemToFormDefaults(item: ItemCatalogRow): {
     trackExpiration: item.trackExpiration,
     trackLotNumber: item.trackLotNumber,
     expirationWarningDays: String(item.expirationWarningDays),
+    packQuantity: item.packQuantity !== null ? String(item.packQuantity) : "",
   };
 }

@@ -20,7 +20,6 @@ export type ExpirationLotRow = {
   categoryName: string | null;
   locationId: string;
   locationName: string | null;
-  room: string | null;
   lotNumber: string | null;
   expirationDate: string | null;
   quantityOnHand: number;
@@ -91,7 +90,7 @@ export async function getExpirationCenterData(
   let lotQuery = supabase
     .from("inventory_lot_stock")
     .select(
-      "lot_id, item_id, item_name, internal_sku, category_id, category_name, location_id, location_name, room, lot_number, expiration_date, quantity_on_hand, unit_abbreviation, status, days_until_expiration"
+      "lot_id, item_id, item_name, internal_sku, category_id, category_name, location_id, location_name, lot_number, expiration_date, quantity_on_hand, unit_abbreviation, status, days_until_expiration"
     )
     .gt("quantity_on_hand", 0)
     .not("expiration_date", "is", null);
@@ -147,7 +146,6 @@ export async function getExpirationCenterData(
         categoryName: row.category_name,
         locationId: row.location_id,
         locationName: row.location_name,
-        room: row.room,
         lotNumber: row.lot_number,
         expirationDate: row.expiration_date,
         quantityOnHand: Number(row.quantity_on_hand ?? 0),

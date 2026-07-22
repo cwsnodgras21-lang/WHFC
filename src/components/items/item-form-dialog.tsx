@@ -48,6 +48,7 @@ const emptyDefaults: ItemFormValues = {
   trackExpiration: false,
   trackLotNumber: false,
   expirationWarningDays: "90",
+  packQuantity: "",
 };
 
 export function ItemFormDialog({
@@ -482,6 +483,28 @@ export function ItemFormDialog({
                 />
               </FormField>
             </div>
+
+            <FormField
+              id="packQuantity"
+              label="Pack quantity (optional)"
+              error={errors.packQuantity?.message}
+            >
+              <FormInput
+                id="packQuantity"
+                type="number"
+                min={1}
+                step={1}
+                placeholder="e.g. 20 syringes per box"
+                disabled={readOnly || isPending}
+                aria-invalid={Boolean(errors.packQuantity)}
+                {...register("packQuantity")}
+              />
+            </FormField>
+            <p className="form-hint -mt-2">
+              How many individual items are in one stocking unit (e.g. 20
+              syringes per box). Shown on Receive to help total up what
+              arrived. Leave blank if not applicable.
+            </p>
 
             <div className="rounded-md border border-[var(--color-border-subtle)] p-3 space-y-3">
               <p className="text-sm font-semibold text-[var(--color-fg)]">

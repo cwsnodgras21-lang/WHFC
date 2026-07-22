@@ -21,6 +21,17 @@ const warningDaysField = z
   }, "Enter a whole number of days greater than zero.")
   .refine((value) => Number(value) <= 3650, "That is too many days.");
 
+const packQuantityField = z
+  .string()
+  .optional()
+  .or(z.literal(""))
+  .refine((value) => {
+    if (!value) return true;
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0;
+  }, "Enter a whole number greater than zero.")
+  .refine((value) => !value || Number(value) <= 999_999, "Value is too large.");
+
 const itemFields = {
   itemName: z
     .string()
@@ -48,6 +59,7 @@ const itemFields = {
   trackExpiration: z.boolean(),
   trackLotNumber: z.boolean(),
   expirationWarningDays: warningDaysField,
+  packQuantity: packQuantityField,
 };
 
 function parLevelMeetsReorder(reorderPoint: number, parLevel: number): boolean {
@@ -68,6 +80,7 @@ export const itemFormSchema = z
     trackExpiration: itemFields.trackExpiration,
     trackLotNumber: itemFields.trackLotNumber,
     expirationWarningDays: itemFields.expirationWarningDays,
+    packQuantity: itemFields.packQuantity,
   })
   .superRefine((data, ctx) => {
     const reorder = Number(data.reorderPoint);
@@ -96,6 +109,7 @@ const itemPayloadSchema = z
     trackExpiration: z.boolean(),
     trackLotNumber: z.boolean(),
     expirationWarningDays: z.coerce.number().int().positive().max(3650),
+    packQuantity: z.coerce.number().int().positive().max(999_999).nullable().optional(),
   })
   .refine((data) => parLevelMeetsReorder(data.reorderPoint, data.parLevel), {
     message: "Par level must be greater than or equal to reorder point.",
@@ -128,6 +142,9 @@ export function formValuesToCreateInput(
     trackExpiration: values.trackExpiration,
     trackLotNumber: values.trackLotNumber,
     expirationWarningDays: Number(values.expirationWarningDays),
+    packQuantity: values.packQuantity?.trim()
+      ? Number(values.packQuantity)
+      : null,
   };
 }
 

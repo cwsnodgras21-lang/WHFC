@@ -269,7 +269,6 @@ type PhysicalCountDetailHeaderProps = {
   count: {
     id: string;
     locationName: string;
-    room: string | null;
     status: "in_progress" | "completed" | "cancelled";
     startedAt: string;
     completedAt: string | null;
@@ -279,9 +278,7 @@ type PhysicalCountDetailHeaderProps = {
 export function PhysicalCountDetailHeader({
   count,
 }: PhysicalCountDetailHeaderProps) {
-  const locationLabel = count.room
-    ? `${count.locationName} — ${count.room}`
-    : count.locationName;
+  const locationLabel = count.locationName;
 
   return (
     <div className="space-y-3">

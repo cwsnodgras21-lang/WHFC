@@ -27,29 +27,20 @@ const locations: LocationRow[] = [
   {
     id: "location-1",
     locationName: "Supply Closet",
-    room: "101",
-    cabinet: "A",
-    shelf: "1",
-    bin: "2",
     active: true,
     hasTransactions: false,
   },
   {
     id: "location-2",
     locationName: "Exam Room Overflow",
-    room: "Exam 3",
-    cabinet: "North",
-    shelf: "Top",
-    bin: "Blue",
     active: false,
     hasTransactions: true,
   },
 ];
 
 describe("locations catalog helpers", () => {
-  it("matches across location identity fields", () => {
+  it("matches by location name", () => {
     expect(matchesLocationSearch(locations[0], "closet")).toBe(true);
-    expect(matchesLocationSearch(locations[0], "101")).toBe(true);
     expect(matchesLocationSearch(locations[0], "cabinet")).toBe(false);
   });
 

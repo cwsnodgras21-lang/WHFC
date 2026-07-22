@@ -268,7 +268,6 @@ export function ExpirationLotsTable({
                   </td>
                   <td className="muted" data-label="Location">
                     {row.locationName ?? "—"}
-                    {row.room ? ` · ${row.room}` : ""}
                   </td>
                   <td className="mono" data-label="Lot number">
                     {row.lotNumber ?? "—"}

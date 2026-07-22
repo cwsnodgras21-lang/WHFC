@@ -562,6 +562,7 @@ export type Database = {
           id: string
           internal_sku: string
           item_name: string
+          pack_quantity: number | null
           par_level: number
           preferred_vendor_id: string | null
           reorder_point: number
@@ -578,6 +579,7 @@ export type Database = {
           id?: string
           internal_sku: string
           item_name: string
+          pack_quantity?: number | null
           par_level?: number
           preferred_vendor_id?: string | null
           reorder_point?: number
@@ -594,6 +596,7 @@ export type Database = {
           id?: string
           internal_sku?: string
           item_name?: string
+          pack_quantity?: number | null
           par_level?: number
           preferred_vendor_id?: string | null
           reorder_point?: number
@@ -629,35 +632,23 @@ export type Database = {
       locations: {
         Row: {
           active: boolean
-          bin: string | null
-          cabinet: string | null
           created_at: string
           id: string
           location_name: string
-          room: string | null
-          shelf: string | null
           updated_at: string
         }
         Insert: {
           active?: boolean
-          bin?: string | null
-          cabinet?: string | null
           created_at?: string
           id?: string
           location_name: string
-          room?: string | null
-          shelf?: string | null
           updated_at?: string
         }
         Update: {
           active?: boolean
-          bin?: string | null
-          cabinet?: string | null
           created_at?: string
           id?: string
           location_name?: string
-          room?: string | null
-          shelf?: string | null
           updated_at?: string
         }
         Relationships: [        ]
@@ -1205,6 +1196,7 @@ export type Database = {
           id: string
           name: string
           updated_at: string
+          website: string | null
         }
         Insert: {
           active?: boolean
@@ -1214,6 +1206,7 @@ export type Database = {
           id?: string
           name: string
           updated_at?: string
+          website?: string | null
         }
         Update: {
           active?: boolean
@@ -1223,6 +1216,7 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -1269,7 +1263,6 @@ export type Database = {
           lot_number: string | null
           quantity_on_hand: number | null
           received_date: string | null
-          room: string | null
           status: Database["public"]["Enums"]["lot_status"] | null
           unit_abbreviation: string | null
           vendor_id: string | null
@@ -1324,7 +1317,6 @@ export type Database = {
       }
       inventory_transaction_history: {
         Row: {
-          cabinet: string | null
           created_at: string | null
           id: string | null
           internal_sku: string | null
@@ -1337,7 +1329,6 @@ export type Database = {
           performed_by_name: string | null
           quantity: number | null
           reason_code: Database["public"]["Enums"]["reason_code"] | null
-          room: string | null
           transaction_date: string | null
           transaction_group_id: string | null
           transaction_type:
@@ -1441,7 +1432,6 @@ export type Database = {
       }
       recent_inventory_transactions: {
         Row: {
-          cabinet: string | null
           created_at: string | null
           id: string | null
           internal_sku: string | null
@@ -1453,7 +1443,6 @@ export type Database = {
           performed_by: string | null
           quantity: number | null
           reason_code: Database["public"]["Enums"]["reason_code"] | null
-          room: string | null
           transaction_date: string | null
           transaction_group_id: string | null
           transaction_type:

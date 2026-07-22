@@ -11,6 +11,7 @@ export type VendorRow = {
   name: string;
   contactEmail: string | null;
   contactPhone: string | null;
+  website: string | null;
   active: boolean;
 };
 
@@ -47,7 +48,7 @@ export async function getVendorsPageData(
 
   const { data, error } = await supabase
     .from("vendors")
-    .select("id, name, contact_email, contact_phone, active")
+    .select("id, name, contact_email, contact_phone, website, active")
     .order("name");
 
   return {
@@ -59,6 +60,7 @@ export async function getVendorsPageData(
       name: row.name,
       contactEmail: row.contact_email,
       contactPhone: row.contact_phone,
+      website: row.website,
       active: row.active,
     })),
     loadError: error?.message ?? null,

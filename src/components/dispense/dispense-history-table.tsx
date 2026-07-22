@@ -44,11 +44,7 @@ export function DispenseHistoryTable({ events }: DispenseHistoryTableProps) {
           </thead>
           <tbody>
             {events.map((event) => {
-              const location = formatLocationDetail(
-                event.locationName,
-                event.room,
-                event.cabinet
-              );
+              const location = formatLocationDetail(event.locationName);
               const sourceLabel =
                 DISPENSE_SOURCE_LABELS[event.source as DispenseSource] ??
                 event.source;

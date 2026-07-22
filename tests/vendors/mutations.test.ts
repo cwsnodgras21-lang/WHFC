@@ -59,6 +59,7 @@ describe("vendor mutations", () => {
       name: "MedSupply Co",
       contactEmail: null,
       contactPhone: null,
+      website: null,
       active: true,
     });
     expect(result.success).toBe(false);

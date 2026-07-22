@@ -31,10 +31,6 @@ type LocationFormDialogProps = {
 
 const emptyDefaults: LocationFormValues = {
   locationName: "",
-  room: "",
-  cabinet: "",
-  shelf: "",
-  bin: "",
   active: true,
 };
 
@@ -102,10 +98,6 @@ export function LocationFormDialog({
     startTransition(async () => {
       const payload = {
         locationName: values.locationName.trim(),
-        room: values.room?.trim() ? values.room.trim() : null,
-        cabinet: values.cabinet?.trim() ? values.cabinet.trim() : null,
-        shelf: values.shelf?.trim() ? values.shelf.trim() : null,
-        bin: values.bin?.trim() ? values.bin.trim() : null,
         active: values.active,
       };
 
@@ -194,48 +186,6 @@ export function LocationFormDialog({
                 {...register("locationName")}
               />
             </FormField>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id="room" label="Room" error={errors.room?.message}>
-                <FormInput
-                  id="room"
-                  disabled={fieldDisabled}
-                  aria-invalid={Boolean(errors.room)}
-                  {...register("room")}
-                />
-              </FormField>
-              <FormField
-                id="cabinet"
-                label="Cabinet"
-                error={errors.cabinet?.message}
-              >
-                <FormInput
-                  id="cabinet"
-                  disabled={fieldDisabled}
-                  aria-invalid={Boolean(errors.cabinet)}
-                  {...register("cabinet")}
-                />
-              </FormField>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id="shelf" label="Shelf" error={errors.shelf?.message}>
-                <FormInput
-                  id="shelf"
-                  disabled={fieldDisabled}
-                  aria-invalid={Boolean(errors.shelf)}
-                  {...register("shelf")}
-                />
-              </FormField>
-              <FormField id="bin" label="Bin" error={errors.bin?.message}>
-                <FormInput
-                  id="bin"
-                  disabled={fieldDisabled}
-                  aria-invalid={Boolean(errors.bin)}
-                  {...register("bin")}
-                />
-              </FormField>
-            </div>
 
             <label className="flex items-center gap-2 text-sm text-[var(--color-fg)]">
               <input

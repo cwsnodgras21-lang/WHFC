@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { transferInventoryAction } from "@/lib/actions/transfer-inventory";
 import { onHandKey } from "@/lib/data/inventory";
@@ -55,6 +55,8 @@ export function TransferInventoryForm({
   recentTransfers: initialTransfers,
 }: TransferInventoryFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefilledLocationId = searchParams.get("location") ?? "";
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -74,7 +76,11 @@ export function TransferInventoryForm({
     resolver: zodResolver(transferInventoryFormSchema),
     defaultValues: {
       itemId: "",
-      fromLocationId: "",
+      fromLocationId:
+        prefilledLocationId &&
+        locations.some((location) => location.id === prefilledLocationId)
+          ? prefilledLocationId
+          : "",
       toLocationId: "",
       quantity: "",
       transactionDate: defaultTransactionDateLocal(),
@@ -279,7 +285,6 @@ export function TransferInventoryForm({
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
                     {location.locationName}
-                    {location.room ? ` — ${location.room}` : ""}
                   </option>
                 ))}
               </FormSelect>
@@ -304,7 +309,6 @@ export function TransferInventoryForm({
                     disabled={location.id === watchedFromLocationId}
                   >
                     {location.locationName}
-                    {location.room ? ` — ${location.room}` : ""}
                   </option>
                 ))}
               </FormSelect>

@@ -82,10 +82,14 @@ export async function executeReviewSuggestion(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
+  const dismissedUntil = new Date();
+  dismissedUntil.setUTCDate(dismissedUntil.getUTCDate() + DISMISS_DURATION_DAYS);
+
   const { error } = await supabase.from("reorder_suggestion_actions").insert({
     item_id: parsed.data.itemId,
     location_id: parsed.data.locationId,
     action: "reviewed",
+    dismissed_until: dismissedUntil.toISOString(),
     created_by: session.user.id,
   });
 
@@ -158,7 +162,7 @@ async function createPoDraftLine(
     .insert({
       purchase_order_draft_id: draftId,
       item_id: input.itemId,
-      location_id: input.locationId,
+      location_id: input.locationId ?? null,
       quantity: input.quantity,
       suggested_quantity: input.suggestedQuantity ?? input.quantity,
       reorder_reason: input.reorderReason ?? null,

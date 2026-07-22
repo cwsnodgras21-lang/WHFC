@@ -31,6 +31,8 @@ export type ItemSourcingData = {
   itemId: string;
   itemName: string;
   internalSku: string;
+  stockingUnitName: string | null;
+  stockingUnitAbbreviation: string | null;
   sources: ItemVendorSource[];
   vendorOptions: VendorOption[];
   loadError: string | null;
@@ -48,7 +50,7 @@ export async function getItemSourcingData(
 
   const { data: item, error: itemError } = await supabase
     .from("items")
-    .select("id, item_name, internal_sku")
+    .select("id, item_name, internal_sku, units_of_measure(name, abbreviation)")
     .eq("id", itemId)
     .maybeSingle();
 
@@ -59,6 +61,8 @@ export async function getItemSourcingData(
       itemId,
       itemName: "",
       internalSku: "",
+      stockingUnitName: null,
+      stockingUnitAbbreviation: null,
       sources: [],
       vendorOptions: [],
       loadError: itemError.message,
@@ -115,12 +119,19 @@ export async function getItemSourcingData(
   const loadError =
     sourcesResult.error?.message ?? vendorsResult.error?.message ?? null;
 
+  const unit = item.units_of_measure as {
+    name?: string;
+    abbreviation?: string;
+  } | null;
+
   return {
     found: true,
     canManage,
     itemId: item.id,
     itemName: item.item_name,
     internalSku: item.internal_sku,
+    stockingUnitName: unit?.name ?? null,
+    stockingUnitAbbreviation: unit?.abbreviation ?? null,
     sources,
     vendorOptions: (vendorsResult.data ?? []).map((vendor) => ({
       id: vendor.id,

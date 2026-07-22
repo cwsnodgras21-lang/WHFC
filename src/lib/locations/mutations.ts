@@ -147,10 +147,6 @@ export async function insertLocation(
     .from("locations")
     .insert({
       location_name: input.locationName,
-      room: input.room,
-      cabinet: input.cabinet,
-      shelf: input.shelf,
-      bin: input.bin,
       active: input.active,
     })
     .select("id")
@@ -169,7 +165,7 @@ export async function updateLocationRecord(
 ): Promise<LocationMutationResult> {
   const { data: existing, error: existingError } = await supabase
     .from("locations")
-    .select("id, location_name, room, cabinet, shelf, bin")
+    .select("id, location_name")
     .eq("id", input.id)
     .maybeSingle();
 
@@ -181,12 +177,7 @@ export async function updateLocationRecord(
     return { success: false, error: "Location not found." };
   }
 
-  const identityChanged =
-    existing.location_name !== input.locationName ||
-    existing.room !== input.room ||
-    existing.cabinet !== input.cabinet ||
-    existing.shelf !== input.shelf ||
-    existing.bin !== input.bin;
+  const identityChanged = existing.location_name !== input.locationName;
 
   if (identityChanged && (await locationHasTransactions(supabase, input.id))) {
     return {
@@ -200,10 +191,6 @@ export async function updateLocationRecord(
     .from("locations")
     .update({
       location_name: input.locationName,
-      room: input.room,
-      cabinet: input.cabinet,
-      shelf: input.shelf,
-      bin: input.bin,
       active: input.active,
     })
     .eq("id", input.id)

@@ -234,14 +234,16 @@ export function shouldShowSuggestion(
     return true;
   }
 
-  if (action.action === "dismissed" && action.dismissedUntil) {
+  // Both "dismissed" and "reviewed" suppress the suggestion for the same
+  // window; after it lapses, the suggestion resurfaces if the underlying
+  // reasons still apply.
+  if (
+    (action.action === "dismissed" || action.action === "reviewed") &&
+    action.dismissedUntil
+  ) {
     if (new Date(action.dismissedUntil) > now) {
       return false;
     }
-  }
-
-  if (action.action === "reviewed") {
-    return false;
   }
 
   return true;

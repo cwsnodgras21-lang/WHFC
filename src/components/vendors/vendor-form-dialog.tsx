@@ -24,6 +24,7 @@ const emptyDefaults: VendorFormValues = {
   name: "",
   contactEmail: "",
   contactPhone: "",
+  website: "",
   active: true,
 };
 
@@ -49,6 +50,7 @@ export function VendorFormDialog({
         name: vendor.name,
         contactEmail: vendor.contactEmail ?? "",
         contactPhone: vendor.contactPhone ?? "",
+        website: vendor.website ?? "",
         active: vendor.active,
       });
       return;
@@ -72,6 +74,7 @@ export function VendorFormDialog({
         name: values.name.trim(),
         contactEmail: values.contactEmail?.trim() ? values.contactEmail.trim() : null,
         contactPhone: values.contactPhone?.trim() ? values.contactPhone.trim() : null,
+        website: values.website?.trim() ? values.website.trim() : null,
         active: values.active,
       };
       const result = mode === "create"
@@ -101,6 +104,15 @@ export function VendorFormDialog({
             </FormField>
             <FormField id="vendorPhone" label="Contact phone (optional)" error={errors.contactPhone?.message}>
               <FormInput id="vendorPhone" disabled={disabled} {...register("contactPhone")} />
+            </FormField>
+            <FormField id="vendorWebsite" label="Website (optional)" error={errors.website?.message}>
+              <FormInput
+                id="vendorWebsite"
+                type="url"
+                placeholder="https://vendor.example.com/order"
+                disabled={disabled}
+                {...register("website")}
+              />
             </FormField>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" disabled={disabled} {...register("active")} /> Active

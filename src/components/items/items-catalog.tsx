@@ -244,6 +244,12 @@ export function ItemsCatalog({
                             {canManage ? "Edit" : "View"}
                           </Button>
                           <LinkButton
+                            href={`/items/${item.id}`}
+                            variant="secondary"
+                          >
+                            Details
+                          </LinkButton>
+                          <LinkButton
                             href={`/items/${item.id}/sourcing`}
                             variant="secondary"
                           >

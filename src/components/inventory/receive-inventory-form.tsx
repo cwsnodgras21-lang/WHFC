@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { receiveInventoryAction } from "@/lib/actions/receive-inventory";
 import { onHandKey } from "@/lib/data/inventory";
@@ -61,6 +61,8 @@ export function ReceiveInventoryForm({
   lotTrackingEnabled = true,
 }: ReceiveInventoryFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefilledLocationId = searchParams.get("location") ?? "";
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -80,7 +82,11 @@ export function ReceiveInventoryForm({
     resolver: zodResolver(receiveInventoryFormSchema),
     defaultValues: {
       itemId: "",
-      locationId: "",
+      locationId:
+        prefilledLocationId &&
+        locations.some((location) => location.id === prefilledLocationId)
+          ? prefilledLocationId
+          : "",
       quantity: "",
       reasonCode: "vendor_delivery",
       transactionDate: defaultTransactionDateLocal(),
@@ -92,11 +98,24 @@ export function ReceiveInventoryForm({
 
   const watchedItemId = watch("itemId");
   const watchedLocationId = watch("locationId");
+  const watchedQuantity = watch("quantity");
 
   const selectedItem = useMemo(
     () => items.find((item) => item.id === watchedItemId),
     [items, watchedItemId]
   );
+
+  const totalIndividualItems = useMemo(() => {
+    const quantity = Number(watchedQuantity);
+    if (
+      !selectedItem?.packQuantity ||
+      !Number.isFinite(quantity) ||
+      quantity <= 0
+    ) {
+      return null;
+    }
+    return quantity * selectedItem.packQuantity;
+  }, [selectedItem, watchedQuantity]);
 
   const currentOnHand = useMemo(() => {
     if (!watchedItemId || !watchedLocationId) {
@@ -249,6 +268,32 @@ export function ReceiveInventoryForm({
               <span className="font-semibold text-[var(--color-fg)]">
                 {selectedItem.unitName} ({selectedItem.unitAbbreviation})
               </span>
+              {selectedItem.vendorName ? (
+                <>
+                  {" "}
+                  &middot; Preferred vendor:{" "}
+                  <span className="font-semibold text-[var(--color-fg)]">
+                    {selectedItem.vendorName}
+                  </span>
+                </>
+              ) : null}
+              {selectedItem.packQuantity ? (
+                <>
+                  {" "}
+                  &middot; {selectedItem.packQuantity} per{" "}
+                  {selectedItem.unitAbbreviation}
+                  {totalIndividualItems !== null ? (
+                    <>
+                      {" "}
+                      (
+                      <span className="font-semibold text-[var(--color-fg)]">
+                        {totalIndividualItems}
+                      </span>{" "}
+                      items total)
+                    </>
+                  ) : null}
+                </>
+              ) : null}
             </p>
           ) : null}
 
@@ -267,7 +312,6 @@ export function ReceiveInventoryForm({
               {locations.map((location) => (
                 <option key={location.id} value={location.id}>
                   {location.locationName}
-                  {location.room ? ` — ${location.room}` : ""}
                 </option>
               ))}
             </FormSelect>

@@ -11,12 +11,7 @@ import {
   formatReasonCode,
   isPhysicalCountCorrectionReason,
 } from "@/lib/format/reason-codes";
-import {
-  formatTransferGroupLabel,
-  indexTransferGroups,
-  isCompleteTransferPair,
-  isTransferTransactionType,
-} from "@/lib/transactions/transfer-pairing";
+import { isTransferTransactionType } from "@/lib/transactions/transfer-pairing";
 
 type TransactionsTableProps = {
   transactions: TransactionHistoryRow[];
@@ -42,13 +37,6 @@ function transactionTypeBadgeVariant(
 }
 
 export function TransactionsTable({ transactions }: TransactionsTableProps) {
-  const transferGroups = indexTransferGroups(
-    transactions.map((row) => ({
-      transactionGroupId: row.transaction_group_id,
-      transactionType: row.transaction_type,
-    }))
-  );
-
   return (
     <DataTableShell>
       <DataTable>
@@ -75,17 +63,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
         </thead>
         <tbody>
           {transactions.map((row) => {
-            const location = formatLocationDetail(
-              row.location_name,
-              row.room,
-              row.cabinet
-            );
-            const group = row.transaction_group_id
-              ? transferGroups.get(row.transaction_group_id)
-              : undefined;
-            const pairedTransfer =
-              group && isCompleteTransferPair(group) &&
-              isTransferTransactionType(row.transaction_type);
+            const location = formatLocationDetail(row.location_name);
             const countCorrection =
               row.transaction_type === "PHYSICAL_COUNT_CORRECTION";
 
@@ -126,11 +104,6 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     >
                       {formatTransactionType(row.transaction_type)}
                     </Badge>
-                    {pairedTransfer ? (
-                      <Badge variant="info" className="mono">
-                        Pair {formatTransferGroupLabel(row.transaction_group_id)}
-                      </Badge>
-                    ) : null}
                     {countCorrection ? (
                       <Badge variant="warning">Physical count</Badge>
                     ) : null}

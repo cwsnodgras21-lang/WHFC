@@ -23,7 +23,6 @@ export type PhysicalCountsPageData = {
   locations: Array<{
     id: string;
     locationName: string;
-    room: string | null;
     hasActiveCount: boolean;
   }>;
   counts: PhysicalCountSummary[];
@@ -54,7 +53,7 @@ export async function getPhysicalCountsPageData(
     [
       supabase
         .from("locations")
-        .select("id, location_name, room")
+        .select("id, location_name")
         .eq("active", true)
         .order("location_name"),
       supabase
@@ -85,7 +84,6 @@ export async function getPhysicalCountsPageData(
   const locations = (locationsResult.data ?? []).map((row) => ({
     id: row.id,
     locationName: row.location_name,
-    room: row.room,
     hasActiveCount: activeLocationIds.has(row.id),
   }));
 
@@ -127,7 +125,6 @@ export type PhysicalCountDetailData = {
     id: string;
     locationId: string;
     locationName: string;
-    room: string | null;
     status: PhysicalCountStatus;
     startedAt: string;
     completedAt: string | null;
@@ -190,7 +187,7 @@ export async function getPhysicalCountDetailData(
     await Promise.all([
       supabase
         .from("locations")
-        .select("location_name, room")
+        .select("location_name")
         .eq("id", countRow.location_id)
         .maybeSingle(),
       supabase
@@ -260,7 +257,6 @@ export async function getPhysicalCountDetailData(
       id: countRow.id,
       locationId: countRow.location_id,
       locationName: locationResult.data?.location_name ?? "Unknown location",
-      room: locationResult.data?.room ?? null,
       status: countRow.status,
       startedAt: countRow.started_at,
       completedAt: countRow.completed_at,

@@ -10,10 +10,6 @@ describe("location validation", () => {
   it("requires a location name", () => {
     const result = locationFormSchema.safeParse({
       locationName: "",
-      room: "",
-      cabinet: "",
-      shelf: "",
-      bin: "",
       active: true,
     });
 
@@ -23,22 +19,14 @@ describe("location validation", () => {
     }
   });
 
-  it("normalizes optional fields to null for create", () => {
+  it("normalizes the name for create", () => {
     const result = createLocationSchema.parse({
       locationName: " Supply Closet ",
-      room: " ",
-      cabinet: "A",
-      shelf: "",
-      bin: " 12 ",
       active: true,
     });
 
     expect(result).toEqual({
       locationName: "Supply Closet",
-      room: null,
-      cabinet: "A",
-      shelf: null,
-      bin: "12",
       active: true,
     });
   });
@@ -47,10 +35,6 @@ describe("location validation", () => {
     const result = updateLocationSchema.safeParse({
       id: "not-a-uuid",
       locationName: "Supply Closet",
-      room: null,
-      cabinet: null,
-      shelf: null,
-      bin: null,
       active: true,
     });
 

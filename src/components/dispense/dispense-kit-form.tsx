@@ -226,11 +226,7 @@ export function DispenseKitForm({
                   >
                     <option value="">Select a location…</option>
                     {locations.map((loc) => {
-                      const detail = formatLocationDetail(
-                        loc.locationName,
-                        loc.room,
-                        null
-                      );
+                      const detail = formatLocationDetail(loc.locationName);
                       return (
                         <option key={loc.id} value={loc.id}>
                           {detail.secondary

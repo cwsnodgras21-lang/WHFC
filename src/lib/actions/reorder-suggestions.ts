@@ -43,6 +43,7 @@ export async function createPoDraftAction(rawInput: unknown) {
 
   if (result.success) {
     revalidatePath("/reorder-suggestions");
+    revalidatePath("/reorder-report");
     revalidatePath("/purchase-order-drafts");
     revalidatePath("/dashboard");
   }

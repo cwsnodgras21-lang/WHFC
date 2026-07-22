@@ -69,16 +69,11 @@ export function formatSignedQuantityWithUnit(
 }
 
 export function formatLocationDetail(
-  locationName: string | null | undefined,
-  room: string | null | undefined,
-  cabinet: string | null | undefined
+  locationName: string | null | undefined
 ): { primary: string; secondary: string | null } {
-  const primary = locationName?.trim() || "—";
-  const parts = [room?.trim(), cabinet?.trim()].filter(Boolean) as string[];
-
   return {
-    primary,
-    secondary: parts.length > 0 ? parts.join(" · ") : null,
+    primary: locationName?.trim() || "—",
+    secondary: null,
   };
 }
 

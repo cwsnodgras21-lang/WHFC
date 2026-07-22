@@ -1,6 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { canViewReorderReport } from "@/lib/auth/permissions";
+import {
+  canManageReorderSuggestions,
+  canViewReorderReport,
+} from "@/lib/auth/permissions";
 import type { AppSession } from "@/lib/auth/session";
 import { applyReorderReportFilters } from "@/lib/reorder/filtering";
 import { mapReorderReportViewRow } from "@/lib/reorder/map-row";
@@ -28,6 +31,7 @@ export type ReorderReportSummary = {
 
 export type ReorderReportPageData = {
   canView: boolean;
+  canManage: boolean;
   permissionMessage: string | null;
   filters: ReorderReportPageFilters;
   groups: ReorderReportGroup[];
@@ -88,10 +92,15 @@ export async function getReorderReportPageData(
   filters: ReorderReportPageFilters
 ): Promise<ReorderReportPageData> {
   const canView = canViewReorderReport(session.profile.active);
+  const canManage = canManageReorderSuggestions(
+    session.profile.role,
+    session.profile.active
+  );
 
   if (!canView) {
     return {
       canView: false,
+      canManage: false,
       permissionMessage: "Your account cannot view the reorder report.",
       filters,
       groups: [],
@@ -135,6 +144,7 @@ export async function getReorderReportPageData(
 
     return {
       canView: true,
+      canManage,
       permissionMessage: null,
       filters,
       groups,
@@ -151,6 +161,7 @@ export async function getReorderReportPageData(
 
     return {
       canView: true,
+      canManage,
       permissionMessage: null,
       filters,
       groups: [],

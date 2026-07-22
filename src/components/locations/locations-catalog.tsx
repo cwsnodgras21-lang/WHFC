@@ -27,17 +27,7 @@ export function matchesLocationSearch(
     return true;
   }
 
-  return [
-    location.locationName,
-    location.room,
-    location.cabinet,
-    location.shelf,
-    location.bin,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase()
-    .includes(normalized);
+  return location.locationName.toLowerCase().includes(normalized);
 }
 
 export function resolveLocationDialogMode(
@@ -161,10 +151,8 @@ export function LocationsCatalog({
       >
         <div className="card card-body space-y-4">
           <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
-            <FormField
-              id="location-search"
-              label="Search by location, room, cabinet, shelf, or bin"
-            >
+            <FormField id="location-search" label="Search by location">
+
               <FormInput
                 id="location-search"
                 type="search"
@@ -209,10 +197,6 @@ export function LocationsCatalog({
                 <thead>
                   <tr>
                     <th scope="col">Location</th>
-                    <th scope="col">Room</th>
-                    <th scope="col">Cabinet</th>
-                    <th scope="col">Shelf</th>
-                    <th scope="col">Bin</th>
                     <th scope="col">Status</th>
                     <th scope="col">{canManage ? "Actions" : "Details"}</th>
                   </tr>
@@ -244,10 +228,6 @@ export function LocationsCatalog({
                           ) : null}
                         </div>
                       </td>
-                      <td>{location.room ?? "-"}</td>
-                      <td>{location.cabinet ?? "-"}</td>
-                      <td>{location.shelf ?? "-"}</td>
-                      <td>{location.bin ?? "-"}</td>
                       <td>
                         <Badge variant={location.active ? "success" : "default"}>
                           {location.active ? "Active" : "Inactive"}

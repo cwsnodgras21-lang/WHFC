@@ -34,9 +34,7 @@ export function PhysicalCountDetailContent({
     );
   }
 
-  const locationLabel = data.count.room
-    ? `${data.count.locationName} — ${data.count.room}`
-    : data.count.locationName;
+  const locationLabel = data.count.locationName;
 
   return (
     <div className="space-y-6">

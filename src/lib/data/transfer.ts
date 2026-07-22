@@ -18,7 +18,6 @@ export type TransferItemOption = {
 export type TransferLocationOption = {
   id: string;
   locationName: string;
-  room: string | null;
 };
 
 export type RecentTransfer = {
@@ -75,7 +74,7 @@ export async function getTransferPageData(
         .eq("active", true),
       supabase
         .from("locations")
-        .select("id, location_name, room")
+        .select("id, location_name")
         .eq("active", true)
         .order("location_name"),
       fetchOnHandByLocation(supabase).catch(() => ({} as Record<string, number>)),
@@ -112,7 +111,6 @@ export async function getTransferPageData(
     (row) => ({
       id: row.id,
       locationName: row.location_name,
-      room: row.room,
     })
   );
 

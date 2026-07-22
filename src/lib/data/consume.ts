@@ -28,7 +28,6 @@ export type ConsumeItemOption = {
 export type ConsumeLocationOption = {
   id: string;
   locationName: string;
-  room: string | null;
 };
 
 export type ConsumeLotOption = {
@@ -117,7 +116,7 @@ export async function getConsumePageData(
       .eq("active", true),
     supabase
       .from("locations")
-      .select("id, location_name, room")
+      .select("id, location_name")
       .eq("active", true)
       .order("location_name"),
     supabase
@@ -183,7 +182,6 @@ export async function getConsumePageData(
     (row) => ({
       id: row.id,
       locationName: row.location_name,
-      room: row.room,
     })
   );
 

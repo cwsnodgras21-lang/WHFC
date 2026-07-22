@@ -22,12 +22,13 @@ export type ReceiveItemOption = {
   unitAbbreviation: string;
   trackExpiration: boolean;
   trackLotNumber: boolean;
+  vendorName: string | null;
+  packQuantity: number | null;
 };
 
 export type ReceiveLocationOption = {
   id: string;
   locationName: string;
-  room: string | null;
 };
 
 export type ReceiveVendorOption = {
@@ -102,7 +103,7 @@ export async function getReceivePageData(
     supabase
       .from("items")
       .select(
-        "id, item_name, internal_sku, unit_of_measure_id, track_expiration, track_lot_number"
+        "id, item_name, internal_sku, unit_of_measure_id, track_expiration, track_lot_number, preferred_vendor_id, pack_quantity"
       )
       .eq("active", true)
       .order("item_name"),
@@ -112,7 +113,7 @@ export async function getReceivePageData(
       .eq("active", true),
     supabase
       .from("locations")
-      .select("id, location_name, room")
+      .select("id, location_name")
       .eq("active", true)
       .order("location_name"),
     supabase
@@ -139,6 +140,9 @@ export async function getReceivePageData(
   const uomMap = new Map(
     (uomResult.data ?? []).map((u) => [u.id, u])
   );
+  const vendorNameMap = new Map(
+    (vendorsResult.data ?? []).map((v) => [v.id, v.name])
+  );
 
   const items: ReceiveItemOption[] = (itemsResult.data ?? []).map((row) => {
     const unit = uomMap.get(row.unit_of_measure_id);
@@ -150,6 +154,10 @@ export async function getReceivePageData(
       unitAbbreviation: unit?.abbreviation ?? "—",
       trackExpiration: row.track_expiration,
       trackLotNumber: row.track_lot_number,
+      vendorName: row.preferred_vendor_id
+        ? vendorNameMap.get(row.preferred_vendor_id) ?? null
+        : null,
+      packQuantity: row.pack_quantity,
     };
   });
 
@@ -157,7 +165,6 @@ export async function getReceivePageData(
     (row) => ({
       id: row.id,
       locationName: row.location_name,
-      room: row.room,
     })
   );
 

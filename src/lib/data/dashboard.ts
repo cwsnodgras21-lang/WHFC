@@ -53,8 +53,6 @@ type DashboardRecentTransaction = Pick<
   | "item_name"
   | "internal_sku"
   | "location_name"
-  | "room"
-  | "cabinet"
   | "unit_abbreviation"
   | "transaction_type"
   | "quantity"
@@ -180,7 +178,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     supabase
       .from("recent_inventory_transactions")
       .select(
-        "id, occurred_at, item_name, internal_sku, location_name, room, cabinet, unit_abbreviation, transaction_type, quantity, reason_code"
+        "id, occurred_at, item_name, internal_sku, location_name, unit_abbreviation, transaction_type, quantity, reason_code"
       )
       .order("occurred_at", { ascending: false })
       .limit(RECENT_LIMIT),

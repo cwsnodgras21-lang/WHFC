@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { FormField, FormInput, FormSelect } from "@/components/ui/form-field";
 import { PageSection } from "@/components/ui/page-section";
 import { cn } from "@/lib/cn";
+import { safeExternalHref } from "@/lib/security/safe-url";
 
 type StatusFilter = "all" | "active" | "inactive";
 
@@ -30,7 +31,7 @@ export function VendorsCatalog({ vendors, canManage }: { vendors: VendorRow[]; c
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return vendors.filter((row) => {
-      const haystack = [row.name, row.contactEmail, row.contactPhone].filter(Boolean).join(" ").toLowerCase();
+      const haystack = [row.name, row.contactEmail, row.contactPhone, row.website].filter(Boolean).join(" ").toLowerCase();
       const matchesSearch = !q || haystack.includes(q);
       const matchesStatus = statusFilter === "all" || (statusFilter === "active" ? row.active : !row.active);
       return matchesSearch && matchesStatus;
@@ -63,11 +64,28 @@ export function VendorsCatalog({ vendors, canManage }: { vendors: VendorRow[]; c
           {filtered.length === 0 ? <EmptyState title="No vendors found" description="Try a different search or create a vendor." /> : (
             <DataTableShell>
               <DataTable>
-                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th>{canManage ? <th>Actions</th> : null}</tr></thead>
+                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Website</th><th>Status</th>{canManage ? <th>Actions</th> : null}</tr></thead>
                 <tbody>
-                  {filtered.map((row) => (
+                  {filtered.map((row) => {
+                    const websiteHref = safeExternalHref(row.website);
+                    return (
                     <tr key={row.id} className={cn("data-table-row-clickable", !row.active && "data-table-row-inactive")} onClick={() => openRow(row)}>
                       <td>{row.name}</td><td>{row.contactEmail ?? "—"}</td><td>{row.contactPhone ?? "—"}</td>
+                      <td>
+                        {websiteHref ? (
+                          <a
+                            href={websiteHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="link-subtle"
+                          >
+                            Order online →
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
                       <td><Badge variant={row.active ? "success" : "default"}>{row.active ? "Active" : "Inactive"}</Badge></td>
                       {canManage ? (
                         <td><div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
@@ -85,7 +103,8 @@ export function VendorsCatalog({ vendors, canManage }: { vendors: VendorRow[]; c
                         </div></td>
                       ) : null}
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </DataTable>
             </DataTableShell>

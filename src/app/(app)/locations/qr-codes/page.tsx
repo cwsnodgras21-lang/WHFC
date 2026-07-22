@@ -47,7 +47,7 @@ export default async function LocationQrCodesPage() {
 
   const { data: locations, error } = await supabase
     .from("locations")
-    .select("id, location_name, room")
+    .select("id, location_name")
     .eq("active", true)
     .order("location_name");
 
@@ -100,9 +100,6 @@ export default async function LocationQrCodesPage() {
               />
               <div className="qr-sheet-label">
                 <p className="qr-sheet-name">{card.location_name}</p>
-                {card.room ? (
-                  <p className="qr-sheet-room">{card.room}</p>
-                ) : null}
                 <p className="qr-sheet-hint">Scan to view &amp; count stock</p>
               </div>
             </div>

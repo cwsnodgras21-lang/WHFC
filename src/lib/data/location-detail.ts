@@ -29,10 +29,6 @@ export type LocationDetailData = {
   location: {
     id: string;
     locationName: string;
-    room: string | null;
-    cabinet: string | null;
-    shelf: string | null;
-    bin: string | null;
     active: boolean;
   };
   activeCountId: string | null;
@@ -60,7 +56,7 @@ export async function getLocationDetailData(
   const [locationResult, onHandResult, activeCountResult] = await Promise.all([
     supabase
       .from("locations")
-      .select("id, location_name, room, cabinet, shelf, bin, active")
+      .select("id, location_name, active")
       .eq("id", locationId)
       .maybeSingle(),
     supabase
@@ -82,10 +78,6 @@ export async function getLocationDetailData(
   const location = {
     id: locationResult.data.id,
     locationName: locationResult.data.location_name,
-    room: locationResult.data.room,
-    cabinet: locationResult.data.cabinet,
-    shelf: locationResult.data.shelf,
-    bin: locationResult.data.bin,
     active: locationResult.data.active,
   };
 

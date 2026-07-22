@@ -43,7 +43,17 @@ export function ReorderReportPageContent({
     <div className="space-y-6 reorder-report-print-area">
       <PageHeader
         title="Reorder report"
-        description="Read-only replenishment report for active items at or below reorder point. Suggested order quantities bring stock up to par level."
+        description="Replenishment report for active items at or below reorder point. Suggested order quantities bring stock up to par level."
+        actions={
+          data.canManage ? (
+            <Link
+              href="/purchase-order-drafts"
+              className="reorder-report-no-print link-subtle text-sm font-medium"
+            >
+              View PO drafts →
+            </Link>
+          ) : undefined
+        }
       />
 
       <div className="reorder-report-print-meta hidden print:block">
@@ -130,7 +140,7 @@ export function ReorderReportPageContent({
                       </span>
                     </h3>
                   ) : null}
-                  <ReorderReportTable rows={group.rows} />
+                  <ReorderReportTable rows={group.rows} canManage={data.canManage} />
                 </div>
               ))}
             </div>

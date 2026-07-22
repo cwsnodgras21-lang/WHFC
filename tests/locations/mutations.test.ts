@@ -56,10 +56,6 @@ function createSupabaseForUpdate(options?: {
       | {
           id: string;
           location_name: string;
-          room: string | null;
-          cabinet: string | null;
-          shelf: string | null;
-          bin: string | null;
         }
       | null;
     error: { message: string } | null;
@@ -72,10 +68,6 @@ function createSupabaseForUpdate(options?: {
       data: {
         id: "location-1",
         location_name: "Supply Closet",
-        room: "101",
-        cabinet: "A",
-        shelf: "1",
-        bin: "2",
       },
       error: null,
     }
@@ -139,10 +131,6 @@ describe("location mutations", () => {
     const supabase = createSupabaseForInsert();
     const result = await executeCreateLocation(supabase, managerSession, {
       locationName: "Supply Closet",
-      room: "101",
-      cabinet: "A",
-      shelf: "1",
-      bin: "2",
       active: true,
     });
 
@@ -156,10 +144,6 @@ describe("location mutations", () => {
     const supabase = createSupabaseForInsert();
     const result = await executeCreateLocation(supabase, staffSession, {
       locationName: "Supply Closet",
-      room: null,
-      cabinet: null,
-      shelf: null,
-      bin: null,
       active: true,
     });
 
@@ -178,10 +162,6 @@ describe("location mutations", () => {
     });
     const result = await insertLocation(supabase, {
       locationName: "Supply Closet",
-      room: null,
-      cabinet: null,
-      shelf: null,
-      bin: null,
       active: true,
     });
 
@@ -196,10 +176,6 @@ describe("location mutations", () => {
     const result = await executeUpdateLocation(supabase, managerSession, {
       id: "6a1cf720-38b2-42ef-89c6-6131c2243347",
       locationName: "Supply Closet East",
-      room: "102",
-      cabinet: "B",
-      shelf: "2",
-      bin: "4",
       active: true,
     });
 
@@ -214,10 +190,6 @@ describe("location mutations", () => {
     const result = await executeUpdateLocation(supabase, managerSession, {
       id: "6a1cf720-38b2-42ef-89c6-6131c2243347",
       locationName: "Supply Closet East",
-      room: "101",
-      cabinet: "A",
-      shelf: "1",
-      bin: "2",
       active: true,
     });
 

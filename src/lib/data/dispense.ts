@@ -26,7 +26,6 @@ export type DispenseKitComponentDetail = KitComponentForCalculation & {
 export type DispenseLocationOption = {
   id: string;
   locationName: string;
-  room: string | null;
 };
 
 export type DispenseLotOption = {
@@ -102,7 +101,7 @@ export async function getDispensePageData(
       .order("name"),
     supabase
       .from("locations")
-      .select("id, location_name, room")
+      .select("id, location_name")
       .eq("active", true)
       .order("location_name"),
     supabase
@@ -156,7 +155,6 @@ export async function getDispensePageData(
     (loc) => ({
       id: loc.id,
       locationName: loc.location_name,
-      room: loc.room,
     })
   );
 

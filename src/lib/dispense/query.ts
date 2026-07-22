@@ -40,8 +40,6 @@ export type DispenseHistoryRow = {
   kitName: string;
   locationId: string;
   locationName: string;
-  room: string | null;
-  cabinet: string | null;
   createdByName: string | null;
   administeredAmounts: AdministeredAmountSnapshot[];
   lines: DispenseHistoryLine[];
@@ -123,8 +121,6 @@ type RawDispenseRow = {
   locations: {
     id: string;
     location_name: string;
-    room: string | null;
-    cabinet: string | null;
   } | null;
   profiles: { full_name: string | null } | null;
   dispense_event_lines: Array<{
@@ -164,8 +160,6 @@ function mapDispenseRow(row: RawDispenseRow): DispenseHistoryRow {
     kitName: row.procedure_kits?.name ?? "Unknown kit",
     locationId: row.locations?.id ?? "",
     locationName: row.locations?.location_name ?? "—",
-    room: row.locations?.room ?? null,
-    cabinet: row.locations?.cabinet ?? null,
     createdByName: row.profiles?.full_name ?? null,
     administeredAmounts,
     lines,
@@ -254,7 +248,7 @@ export async function fetchDispenseHistory(
       allow_expired_consumption,
       administered_amounts,
       procedure_kits!inner ( id, name ),
-      locations!inner ( id, location_name, room, cabinet ),
+      locations!inner ( id, location_name ),
       profiles!dispense_events_created_by_fkey ( full_name ),
       dispense_event_lines (
         id,

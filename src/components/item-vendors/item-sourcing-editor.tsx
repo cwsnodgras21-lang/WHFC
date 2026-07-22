@@ -34,7 +34,17 @@ function detail(label: string, value: string | number | null | undefined) {
 
 export function ItemSourcingEditor({ data }: { data: ItemSourcingData }) {
   const router = useRouter();
-  const { canManage, itemId, vendorOptions, sources } = data;
+  const {
+    canManage,
+    itemId,
+    vendorOptions,
+    sources,
+    stockingUnitName,
+    stockingUnitAbbreviation,
+  } = data;
+  const stockingUnitLabel = stockingUnitName
+    ? `${stockingUnitName}${stockingUnitAbbreviation ? ` (${stockingUnitAbbreviation})` : ""}`
+    : null;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ItemVendorSource | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -107,8 +117,12 @@ export function ItemSourcingEditor({ data }: { data: ItemSourcingData }) {
                 {preferred.vendorName}
               </p>
               <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {detail("Stocking unit (what we track)", stockingUnitLabel)}
                 {detail("Vendor SKU", preferred.vendorSku)}
-                {detail("Pack size", preferred.packSize)}
+                {detail(
+                  "Pack size (units per stocking unit, from vendor)",
+                  preferred.packSize
+                )}
                 {detail("Typical order qty", preferred.typicalOrderQuantity)}
                 {detail(
                   "Lead time",
@@ -223,8 +237,12 @@ export function ItemSourcingEditor({ data }: { data: ItemSourcingData }) {
                   ) : null}
                 </div>
                 <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {detail("Stocking unit (what we track)", stockingUnitLabel)}
                   {detail("Vendor SKU", source.vendorSku)}
-                  {detail("Pack size", source.packSize)}
+                  {detail(
+                    "Pack size (units per stocking unit, from vendor)",
+                    source.packSize
+                  )}
                   {detail("Typical order qty", source.typicalOrderQuantity)}
                   {detail(
                     "Lead time",

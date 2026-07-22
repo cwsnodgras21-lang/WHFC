@@ -47,18 +47,16 @@ describe("formatSignedQuantityWithUnit", () => {
 });
 
 describe("formatLocationDetail", () => {
-  it("combines room and cabinet as secondary detail", () => {
-    expect(
-      formatLocationDetail("Supply Closet", "Exam 2", "Cabinet A")
-    ).toEqual({
+  it("returns the location name as primary with no secondary detail", () => {
+    expect(formatLocationDetail("Supply Closet")).toEqual({
       primary: "Supply Closet",
-      secondary: "Exam 2 · Cabinet A",
+      secondary: null,
     });
   });
 
-  it("returns null secondary when no room or cabinet", () => {
-    expect(formatLocationDetail("Main Storage", null, null)).toEqual({
-      primary: "Main Storage",
+  it("falls back to an em dash when there is no location name", () => {
+    expect(formatLocationDetail(null)).toEqual({
+      primary: "—",
       secondary: null,
     });
   });

@@ -125,16 +125,23 @@ describe("shouldShowSuggestion", () => {
     ).toBe(true);
   });
 
-  it("hides reviewed suggestions", () => {
+  it("hides reviewed suggestions until dismissed_until passes, same as dismiss", () => {
     const action: SuggestionActionSnapshot = {
       itemId: "item-1",
       locationId: "loc-1",
       action: "reviewed",
-      dismissedUntil: null,
+      dismissedUntil: "2026-07-10T12:00:00.000Z",
       createdAt: "2026-07-08T12:00:00.000Z",
     };
 
     expect(shouldShowSuggestion(["low_stock"], action, now)).toBe(false);
+    expect(
+      shouldShowSuggestion(
+        ["low_stock"],
+        action,
+        new Date("2026-07-11T12:00:00.000Z")
+      )
+    ).toBe(true);
   });
 });
 

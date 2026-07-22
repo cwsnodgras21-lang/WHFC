@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { consumeInventoryAction } from "@/lib/actions/consume-inventory";
 import { onHandKey } from "@/lib/data/inventory";
@@ -67,6 +67,8 @@ export function ConsumeInventoryForm({
   lotTrackingEnabled = true,
 }: ConsumeInventoryFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefilledLocationId = searchParams.get("location") ?? "";
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -89,7 +91,11 @@ export function ConsumeInventoryForm({
     resolver: zodResolver(consumeInventoryFormSchema),
     defaultValues: {
       itemId: "",
-      locationId: "",
+      locationId:
+        prefilledLocationId &&
+        locations.some((location) => location.id === prefilledLocationId)
+          ? prefilledLocationId
+          : "",
       quantity: "",
       reasonCode: "clinic_use",
       transactionDate: defaultTransactionDateLocal(),
@@ -323,7 +329,6 @@ export function ConsumeInventoryForm({
               {locations.map((location) => (
                 <option key={location.id} value={location.id}>
                   {location.locationName}
-                  {location.room ? ` — ${location.room}` : ""}
                 </option>
               ))}
             </FormSelect>
@@ -491,7 +496,7 @@ export function ConsumeInventoryForm({
             variant="primary"
             disabled={isPending || formDisabled || noStockHere}
           >
-            {isPending ? "Consuming…" : "Consume stock"}
+            {isPending ? "Recording…" : "Use stock"}
           </Button>
         </div>
       </form>

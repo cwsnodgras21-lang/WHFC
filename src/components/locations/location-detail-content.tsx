@@ -14,27 +14,13 @@ function formatQuantity(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(2);
 }
 
-function locationPlacement(location: LocationDetailData["location"]): string {
-  const parts = [
-    location.room,
-    location.cabinet,
-    location.shelf,
-    location.bin,
-  ].filter((part): part is string => Boolean(part));
-  return parts.join(" · ");
-}
-
 export function LocationDetailContent({ data }: { data: LocationDetailData }) {
-  const placement = locationPlacement(data.location);
-
   return (
     <>
       <PageHeader
         eyebrow="Storage location"
         title={data.location.locationName}
-        description={
-          placement || "Everything currently stocked at this location."
-        }
+        description="Everything currently stocked at this location."
         actions={
           <Link href="/locations" className="link-subtle">
             ← All locations
@@ -70,13 +56,22 @@ export function LocationDetailContent({ data }: { data: LocationDetailData }) {
                 activeCountId={data.activeCountId}
               />
             ) : null}
-            <LinkButton href="/consume" variant="secondary">
+            <LinkButton
+              href={`/consume?location=${data.location.id}`}
+              variant="secondary"
+            >
               Consume
             </LinkButton>
-            <LinkButton href="/receive" variant="secondary">
+            <LinkButton
+              href={`/receive?location=${data.location.id}`}
+              variant="secondary"
+            >
               Receive
             </LinkButton>
-            <LinkButton href="/transfer" variant="secondary">
+            <LinkButton
+              href={`/transfer?location=${data.location.id}`}
+              variant="secondary"
+            >
               Transfer
             </LinkButton>
           </div>
