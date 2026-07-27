@@ -11,6 +11,7 @@ const ADMIN_LINKS: Array<{
   { href: "/administration/categories", label: "Categories" },
   { href: "/administration/vendors", label: "Vendors" },
   { href: "/administration/units-of-measure", label: "Units of Measure" },
+  { href: "/administration/billing", label: "Billing" },
 ];
 
 type AdministrationNavProps = {

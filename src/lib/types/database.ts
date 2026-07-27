@@ -1220,6 +1220,198 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_customers: {
+        Row: {
+          id: string
+          stripe_customer_id: string
+          email: string | null
+          name: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          stripe_customer_id: string
+          email?: string | null
+          name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          stripe_customer_id?: string
+          email?: string | null
+          name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      billing_subscriptions: {
+        Row: {
+          id: string
+          billing_customer_id: string
+          stripe_subscription_id: string
+          stripe_price_id: string
+          plan_name: string
+          status: string
+          current_period_start: string | null
+          current_period_end: string | null
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          trial_end: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          billing_customer_id: string
+          stripe_subscription_id: string
+          stripe_price_id: string
+          plan_name: string
+          status: string
+          current_period_start?: string | null
+          current_period_end?: string | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          trial_end?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          billing_customer_id?: string
+          stripe_subscription_id?: string
+          stripe_price_id?: string
+          plan_name?: string
+          status?: string
+          current_period_start?: string | null
+          current_period_end?: string | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          trial_end?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_subscriptions_billing_customer_id_fkey"
+            columns: ["billing_customer_id"]
+            isOneToOne: false
+            referencedRelation: "billing_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      billing_invoices: {
+        Row: {
+          id: string
+          billing_customer_id: string
+          stripe_invoice_id: string
+          stripe_payment_intent_id: string | null
+          amount_due: number
+          amount_paid: number
+          currency: string
+          status: string
+          description: string | null
+          invoice_pdf: string | null
+          hosted_invoice_url: string | null
+          due_date: string | null
+          paid_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          billing_customer_id: string
+          stripe_invoice_id: string
+          stripe_payment_intent_id?: string | null
+          amount_due: number
+          amount_paid?: number
+          currency?: string
+          status: string
+          description?: string | null
+          invoice_pdf?: string | null
+          hosted_invoice_url?: string | null
+          due_date?: string | null
+          paid_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          billing_customer_id?: string
+          stripe_invoice_id?: string
+          stripe_payment_intent_id?: string | null
+          amount_due?: number
+          amount_paid?: number
+          currency?: string
+          status?: string
+          description?: string | null
+          invoice_pdf?: string | null
+          hosted_invoice_url?: string | null
+          due_date?: string | null
+          paid_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_invoices_billing_customer_id_fkey"
+            columns: ["billing_customer_id"]
+            isOneToOne: false
+            referencedRelation: "billing_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      billing_payment_methods: {
+        Row: {
+          id: string
+          billing_customer_id: string
+          stripe_payment_method_id: string
+          type: string
+          brand: string | null
+          last4: string | null
+          exp_month: number | null
+          exp_year: number | null
+          is_default: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          billing_customer_id: string
+          stripe_payment_method_id: string
+          type: string
+          brand?: string | null
+          last4?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
+          is_default?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          billing_customer_id?: string
+          stripe_payment_method_id?: string
+          type?: string
+          brand?: string | null
+          last4?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
+          is_default?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_payment_methods_billing_customer_id_fkey"
+            columns: ["billing_customer_id"]
+            isOneToOne: false
+            referencedRelation: "billing_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       activity_feed: {

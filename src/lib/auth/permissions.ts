@@ -160,6 +160,13 @@ export function canManageModuleSettings(role: UserRole, active: boolean): boolea
   return role === "administrator";
 }
 
+export function canManageBilling(role: UserRole, active: boolean): boolean {
+  if (!active) {
+    return false;
+  }
+  return role === "administrator";
+}
+
 export const MANAGE_IMAGING_ROLES = [
   "administrator",
   "inventory_manager",
