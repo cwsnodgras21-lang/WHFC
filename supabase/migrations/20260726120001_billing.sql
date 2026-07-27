@@ -129,3 +129,11 @@ ALTER TABLE billing_payment_methods ENABLE ROW LEVEL SECURITY;
 
 -- Only service role (server-side) can read/write billing tables.
 -- No authenticated user policies → all access goes through server actions.
+
+-- ── grants ──────────────────────────────────────────────────
+-- This project's service_role has no default table grants (writes normally
+-- go through RPC functions instead). Billing tables are the one exception —
+-- read/written directly via the service-role client — so grant explicitly.
+GRANT SELECT, INSERT, UPDATE, DELETE
+  ON billing_customers, billing_subscriptions, billing_invoices, billing_payment_methods
+  TO service_role;
