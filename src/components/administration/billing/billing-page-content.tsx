@@ -131,7 +131,7 @@ export function BillingPageContent({ data }: BillingPageContentProps) {
         title="Billing"
         description="Manage the subscription and payment method for this app."
         actions={
-          data.hasCustomer ? (
+          data.subscription ? (
             <Button type="button" disabled={isPending} onClick={openPortal}>
               {isPending ? "Opening..." : "Manage billing"}
             </Button>
