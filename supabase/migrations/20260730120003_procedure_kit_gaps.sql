@@ -24,7 +24,19 @@ alter table public.procedure_kit_components
 -- ---------------------------------------------------------------------------
 -- procedure_kit_components.dosage_presets — admin-configured quick-select
 -- amounts for variable-quantity components (e.g. 0.25, 0.5, 1.0 mL).
+--
+-- Postgres CHECK constraints cannot contain a raw subquery (including an
+-- EXISTS/unnest lookup), so the array-positivity test is wrapped in an
+-- immutable helper function instead.
 -- ---------------------------------------------------------------------------
+create or replace function public.numeric_array_all_positive(arr numeric[])
+returns boolean
+language sql
+immutable
+as $$
+  select coalesce(bool_and(v > 0), true) from unnest(arr) as v;
+$$;
+
 alter table public.procedure_kit_components
   add column dosage_presets numeric(12,3)[];
 
@@ -34,9 +46,7 @@ alter table public.procedure_kit_components
       dosage_presets is null
       or (
         array_length(dosage_presets, 1) <= 8
-        and not exists (
-          select 1 from unnest(dosage_presets) as v where v <= 0
-        )
+        and public.numeric_array_all_positive(dosage_presets)
       )
     );
 
