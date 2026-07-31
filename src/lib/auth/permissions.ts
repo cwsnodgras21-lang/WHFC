@@ -19,6 +19,7 @@ export const CONSUME_INVENTORY_ROLES = [
   "administrator",
   "inventory_manager",
   "staff",
+  "medic",
 ] as const satisfies readonly UserRole[];
 
 export type ConsumeInventoryRole = (typeof CONSUME_INVENTORY_ROLES)[number];
@@ -106,8 +107,18 @@ export function canViewDispenseHistory(active: boolean): boolean {
   return active;
 }
 
-export function canViewReorderReport(active: boolean): boolean {
-  return active;
+export const VIEW_REORDER_REPORT_ROLES = [
+  "administrator",
+  "inventory_manager",
+  "staff",
+  "read_only",
+] as const satisfies readonly UserRole[];
+
+export function canViewReorderReport(role: UserRole, active: boolean): boolean {
+  if (!active) {
+    return false;
+  }
+  return (VIEW_REORDER_REPORT_ROLES as readonly UserRole[]).includes(role);
 }
 
 export const MANAGE_REORDER_SUGGESTIONS_ROLES = MANAGE_ITEMS_ROLES;
@@ -119,8 +130,18 @@ export function canManageReorderSuggestions(
   return canManageItems(role, active);
 }
 
-export function canViewReorderSuggestions(active: boolean): boolean {
-  return active;
+export const VIEW_REORDER_SUGGESTIONS_ROLES = [
+  "administrator",
+  "inventory_manager",
+  "staff",
+  "read_only",
+] as const satisfies readonly UserRole[];
+
+export function canViewReorderSuggestions(role: UserRole, active: boolean): boolean {
+  if (!active) {
+    return false;
+  }
+  return (VIEW_REORDER_SUGGESTIONS_ROLES as readonly UserRole[]).includes(role);
 }
 
 export function canViewPurchaseOrderDrafts(active: boolean): boolean {
@@ -182,4 +203,47 @@ export function canManageImaging(role: UserRole, active: boolean): boolean {
 
 export function canViewImaging(active: boolean): boolean {
   return active;
+}
+
+export function canViewSamples(active: boolean): boolean {
+  return active;
+}
+
+export const MANAGE_SAMPLE_PRODUCTS_ROLES = MANAGE_ITEMS_ROLES;
+
+export function canManageSampleProducts(
+  role: UserRole,
+  active: boolean
+): boolean {
+  return canManageItems(role, active);
+}
+
+export const RECEIVE_SAMPLE_ROLES = [
+  "administrator",
+  "inventory_manager",
+  "staff",
+] as const satisfies readonly UserRole[];
+
+export function canReceiveSample(role: UserRole, active: boolean): boolean {
+  if (!active) {
+    return false;
+  }
+  return (RECEIVE_SAMPLE_ROLES as readonly UserRole[]).includes(role);
+}
+
+export const DISPENSE_SAMPLE_ROLES = CONSUME_INVENTORY_ROLES;
+
+export function canDispenseSample(role: UserRole, active: boolean): boolean {
+  return canConsumeInventory(role, active);
+}
+
+export function canAdjustSample(role: UserRole, active: boolean): boolean {
+  return canManageItems(role, active);
+}
+
+export function canManageExpirationSettings(
+  role: UserRole,
+  active: boolean
+): boolean {
+  return canManageItems(role, active);
 }

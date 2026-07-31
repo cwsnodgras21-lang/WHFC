@@ -42,4 +42,9 @@ export const ACTIVITY_EVENTS = {
     statusChanged: "imaging.status_changed",
     cancelled: "imaging.cancelled",
   },
+  samples: {
+    received: "samples.received",
+    dispensed: "samples.dispensed",
+    adjusted: "samples.adjusted",
+  },
 } as const;

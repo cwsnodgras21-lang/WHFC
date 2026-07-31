@@ -81,6 +81,14 @@ export const MODULE_DEFINITIONS: readonly ModuleDefinition[] = [
     defaultEnabled: true,
     locked: false,
   },
+  {
+    key: "samples",
+    label: "Samples",
+    description:
+      "Medication sample inventory, receiving, patient dispensing, and expiration/low-stock alerts.",
+    defaultEnabled: true,
+    locked: false,
+  },
 ] as const;
 
 export const MODULE_DEFINITION_BY_KEY: Record<ModuleKey, ModuleDefinition> =

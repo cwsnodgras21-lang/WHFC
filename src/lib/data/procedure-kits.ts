@@ -33,12 +33,15 @@ export type ProcedureKitComponentRow = {
   concentrationVolume: number | null;
   concentrationVolumeUnit: string | null;
   required: boolean;
+  displayOrder: number;
+  dosagePresets: number[] | null;
 };
 
 export type ProcedureKitDetail = {
   id: string;
   name: string;
   description: string | null;
+  instructions: string | null;
   active: boolean;
   categoryId: string | null;
   defaultLocationId: string | null;
@@ -160,6 +163,7 @@ export async function getProcedureKitEditorData(
             id,
             name,
             description,
+            instructions,
             active,
             category_id,
             default_location_id,
@@ -178,11 +182,16 @@ export async function getProcedureKitEditorData(
               concentration_volume,
               concentration_volume_unit,
               required,
+              display_order,
+              dosage_presets,
               items ( item_name )
             )
           `
             )
             .eq("id", kitId)
+            .order("display_order", {
+              referencedTable: "procedure_kit_components",
+            })
             .maybeSingle()
         : Promise.resolve({ data: null, error: null }),
       supabase
@@ -217,6 +226,7 @@ export async function getProcedureKitEditorData(
       id: row.id,
       name: row.name,
       description: row.description,
+      instructions: row.instructions,
       active: row.active,
       categoryId: row.category_id,
       defaultLocationId: row.default_location_id,
@@ -244,6 +254,8 @@ export async function getProcedureKitEditorData(
               : null,
           concentrationVolumeUnit: c.concentration_volume_unit,
           required: c.required,
+          displayOrder: c.display_order,
+          dosagePresets: c.dosage_presets,
         };
       }),
     };

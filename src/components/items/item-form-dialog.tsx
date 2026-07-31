@@ -47,7 +47,7 @@ const emptyDefaults: ItemFormValues = {
   active: true,
   trackExpiration: false,
   trackLotNumber: false,
-  expirationWarningDays: "90",
+  expirationWarningDays: "",
   packQuantity: "",
 };
 
@@ -540,12 +540,18 @@ export function ItemFormDialog({
                   id="expirationWarningDays"
                   label="Warn when expiring within (days)"
                   error={errors.expirationWarningDays?.message}
+                  hint={
+                    item
+                      ? `Leave blank to inherit the category or clinic default (currently ${item.resolvedExpirationWarningDays} days).`
+                      : "Leave blank to inherit the category or clinic default."
+                  }
                 >
                   <FormInput
                     id="expirationWarningDays"
                     type="number"
                     min={1}
                     step={1}
+                    placeholder="Inherit default"
                     disabled={readOnly || isPending}
                     aria-invalid={Boolean(errors.expirationWarningDays)}
                     {...register("expirationWarningDays")}

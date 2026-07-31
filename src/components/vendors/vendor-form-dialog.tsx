@@ -25,6 +25,7 @@ const emptyDefaults: VendorFormValues = {
   contactEmail: "",
   contactPhone: "",
   website: "",
+  shippingMinimum: "",
   active: true,
 };
 
@@ -51,6 +52,8 @@ export function VendorFormDialog({
         contactEmail: vendor.contactEmail ?? "",
         contactPhone: vendor.contactPhone ?? "",
         website: vendor.website ?? "",
+        shippingMinimum:
+          vendor.shippingMinimum !== null ? String(vendor.shippingMinimum) : "",
         active: vendor.active,
       });
       return;
@@ -75,6 +78,10 @@ export function VendorFormDialog({
         contactEmail: values.contactEmail?.trim() ? values.contactEmail.trim() : null,
         contactPhone: values.contactPhone?.trim() ? values.contactPhone.trim() : null,
         website: values.website?.trim() ? values.website.trim() : null,
+        shippingMinimum:
+          values.shippingMinimum !== "" && values.shippingMinimum !== undefined
+            ? Number(values.shippingMinimum)
+            : null,
         active: values.active,
       };
       const result = mode === "create"
@@ -112,6 +119,21 @@ export function VendorFormDialog({
                 placeholder="https://vendor.example.com/order"
                 disabled={disabled}
                 {...register("website")}
+              />
+            </FormField>
+            <FormField
+              id="vendorShippingMinimum"
+              label="Free-shipping / order minimum (optional)"
+              error={errors.shippingMinimum?.message}
+            >
+              <FormInput
+                id="vendorShippingMinimum"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="e.g. 150"
+                disabled={disabled}
+                {...register("shippingMinimum")}
               />
             </FormField>
             <label className="flex items-center gap-2 text-sm">

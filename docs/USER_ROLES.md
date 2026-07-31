@@ -2,7 +2,7 @@
 
 ## Overview
 
-Four roles for a single White House Family Care clinic. Roles are stored in `profiles.role` and enforced by RLS policies and RPC function checks — not by UI alone.
+Five roles for a single White House Family Care clinic. Roles are stored in `profiles.role` and enforced by RLS policies and RPC function checks — not by UI alone.
 
 Inactive users (`profiles.active = false`) cannot perform write operations regardless of role.
 
@@ -34,22 +34,40 @@ Inactive users (`profiles.active = false`) cannot perform write operations regar
 - View items, locations, on-hand quantities, transactions, reorder reports, and dashboard
 - No write operations
 
+### Medic
+
+Limited-access role for part-time clinical staff who need to use stock and dispense procedure kits or samples, but not manage inventory master data or purchasing.
+
+- View active items needed for clinical use and available quantities by location
+- Use stock (`consume_inventory`)
+- Execute procedure kits (`dispense_kit`)
+- Record sample dispensing (`dispense_sample`)
+- Submit feedback
+- View their own recent transactions and dispense/sample history (RLS narrows to `performed_by = auth.uid()`, same pattern as Staff)
+- Cannot receive inventory, transfer, adjust, run physical counts, manage vendors/locations/units/categories, view reorder suggestions or reorder report, access Administration, or view billing
+- Gets a minimized navigation: Dashboard, Items (view), Use stock, Dispense, Give sample, Transactions (own)
+
 ## Permission matrix (MVP)
 
-| Capability | Administrator | Inventory Manager | Staff | Read Only |
-|---|:---:|:---:|:---:|:---:|
-| View dashboard & reports | ✓ | ✓ | ✓ | ✓ |
-| View items & locations | ✓ | ✓ | ✓ | ✓ |
-| Manage items & locations | ✓ | ✓ | | |
-| Receive inventory | ✓ | ✓ | ✓ | |
-| Consume inventory | ✓ | ✓ | ✓ | |
-| Transfer inventory | ✓ | ✓ | | |
-| Adjust inventory | ✓ | ✓ | | |
-| Physical counts | ✓ | ✓ | | |
-| View transaction history | ✓ | ✓ | limited | ✓ |
-| User administration | ✓ | | | |
+| Capability | Administrator | Inventory Manager | Staff | Medic | Read Only |
+|---|:---:|:---:|:---:|:---:|:---:|
+| View dashboard & reports | ✓ | ✓ | ✓ | ✓ | ✓ |
+| View items & locations | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Manage items & locations | ✓ | ✓ | | | |
+| Receive inventory | ✓ | ✓ | ✓ | | |
+| Consume inventory | ✓ | ✓ | ✓ | ✓ | |
+| Dispense procedure kits | ✓ | ✓ | ✓ | ✓ | |
+| Give samples | ✓ | ✓ | ✓ | ✓ | |
+| Receive samples | ✓ | ✓ | ✓ | | |
+| Manage procedure kits / sample catalog | ✓ | ✓ | | | |
+| Transfer inventory | ✓ | ✓ | | | |
+| Adjust inventory | ✓ | ✓ | | | |
+| Physical counts | ✓ | ✓ | | | |
+| Reorder suggestions / report | ✓ | ✓ | ✓ | | ✓ |
+| View transaction history | ✓ | ✓ | limited | limited | ✓ |
+| User administration | ✓ | | | | |
 
-"limited" for Staff transaction history: implementation detail for Stage 3 RLS — likely recent transactions or own `performed_by` rows only.
+"limited" for Staff and Medic transaction/dispense/sample history: RLS restricts to their own `performed_by` rows only.
 
 ## Enum values
 
@@ -58,6 +76,7 @@ administrator
 inventory_manager
 staff
 read_only
+medic
 ```
 
 ## Provisioning

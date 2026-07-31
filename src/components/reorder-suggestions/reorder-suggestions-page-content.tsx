@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ReorderSuggestionsTable } from "@/components/reorder-suggestions/reorder-suggestions-table";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -73,6 +74,7 @@ export function ReorderSuggestionsPageContent({
                 {data.draftCount} open PO draft{data.draftCount === 1 ? "" : "s"}
               </Link>
             ) : null}
+            <HelpButton topic="reorder-suggestions" />
           </div>
         }
       />

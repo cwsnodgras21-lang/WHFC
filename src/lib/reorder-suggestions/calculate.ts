@@ -29,6 +29,9 @@ export type ReorderItemMeta = {
   parLevel: number;
   preferredVendorId: string | null;
   vendorName: string | null;
+  vendorShippingMinimum: number | null;
+  vendorLeadTimeDays: number | null;
+  vendorOrderingUrl: string | null;
   trackExpiration: boolean;
 };
 
@@ -78,6 +81,9 @@ export type ReorderSuggestion = {
   suggestedReorderQuantity: number;
   preferredVendorId: string | null;
   vendorName: string | null;
+  vendorShippingMinimum: number | null;
+  vendorLeadTimeDays: number | null;
+  vendorOrderingUrl: string | null;
   reasons: ReorderSuggestionReason[];
   expiringLotCounts: ExpiringLotCounts;
   mathLines: string[];
@@ -360,6 +366,9 @@ export function buildReorderSuggestions(input: {
       suggestedReorderQuantity: suggestedQty,
       preferredVendorId: item.preferredVendorId,
       vendorName: item.vendorName,
+      vendorShippingMinimum: item.vendorShippingMinimum,
+      vendorLeadTimeDays: item.vendorLeadTimeDays,
+      vendorOrderingUrl: item.vendorOrderingUrl,
       reasons,
       expiringLotCounts: lotCalc.expiring,
       mathLines: buildMathLines({

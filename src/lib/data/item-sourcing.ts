@@ -11,11 +11,13 @@ export type ItemVendorSource = {
   vendorId: string;
   vendorName: string;
   isPreferred: boolean;
+  active: boolean;
   vendorSku: string | null;
   manufacturer: string | null;
   manufacturerPartNumber: string | null;
   packSize: string | null;
   typicalOrderQuantity: number | null;
+  minimumOrderQuantity: number | null;
   leadTimeDays: number | null;
   typicalCost: number | null;
   lastOrderDate: string | null;
@@ -77,7 +79,7 @@ export async function getItemSourcingData(
     supabase
       .from("item_vendors")
       .select(
-        "id, vendor_id, is_preferred, vendor_sku, manufacturer, manufacturer_part_number, pack_size, typical_order_quantity, lead_time_days, typical_cost, last_order_date, ordering_notes, ordering_url, vendors(name)"
+        "id, vendor_id, is_preferred, active, vendor_sku, manufacturer, manufacturer_part_number, pack_size, typical_order_quantity, minimum_order_quantity, lead_time_days, typical_cost, last_order_date, ordering_notes, ordering_url, vendors(name)"
       )
       .eq("item_id", itemId),
     supabase
@@ -94,6 +96,7 @@ export async function getItemSourcingData(
       vendorId: row.vendor_id,
       vendorName: vendor?.name ?? "Unknown vendor",
       isPreferred: row.is_preferred,
+      active: row.active,
       vendorSku: row.vendor_sku,
       manufacturer: row.manufacturer,
       manufacturerPartNumber: row.manufacturer_part_number,
@@ -102,6 +105,10 @@ export async function getItemSourcingData(
         row.typical_order_quantity === null
           ? null
           : Number(row.typical_order_quantity),
+      minimumOrderQuantity:
+        row.minimum_order_quantity === null
+          ? null
+          : Number(row.minimum_order_quantity),
       leadTimeDays: row.lead_time_days,
       typicalCost: row.typical_cost === null ? null : Number(row.typical_cost),
       lastOrderDate: row.last_order_date,

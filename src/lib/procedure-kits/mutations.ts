@@ -58,6 +58,7 @@ async function saveProcedureKit(
   const kitPayload = {
     name: input.name.trim(),
     description: input.description?.trim() || null,
+    instructions: input.instructions?.trim() || null,
     category_id: input.categoryId || null,
     active: input.active,
     default_location_id: input.defaultLocationId || null,
@@ -99,9 +100,14 @@ async function saveProcedureKit(
     kitId = data.id;
   }
 
-  const componentRows = input.components.map((c) => ({
+  const componentRows = input.components.map((c, index) => ({
     procedure_kit_id: kitId!,
     item_id: c.itemId,
+    display_order: c.displayOrder ?? index,
+    dosage_presets:
+      c.isVariableQuantity && c.dosagePresets && c.dosagePresets.length > 0
+        ? c.dosagePresets
+        : null,
     quantity: c.isVariableQuantity ? 1 : c.quantity,
     unit: c.unit.trim(),
     is_variable_quantity: c.isVariableQuantity,

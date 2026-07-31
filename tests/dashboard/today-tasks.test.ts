@@ -134,4 +134,101 @@ describe("buildTodayTasks", () => {
     const resolved = buildTodayTasks(makeSummary(), MANAGER);
     expect(resolved.some((t) => t.id === "expired-stock")).toBe(false);
   });
+
+  describe("sample alerts", () => {
+    it("surfaces a high-priority task for low sample stock", () => {
+      const tasks = buildTodayTasks(makeSummary(), {
+        ...MANAGER,
+        samples: {
+          lowStockCount: 2,
+          outOfStockCount: 0,
+          expiringCount: 0,
+          expiredCount: 0,
+        },
+      });
+      expect(tasks).toHaveLength(1);
+      expect(tasks[0]).toMatchObject({
+        id: "samples-low-stock",
+        priority: "high",
+        href: "/samples",
+      });
+    });
+
+    it("escalates to critical when a sample is out of stock", () => {
+      const tasks = buildTodayTasks(makeSummary(), {
+        ...MANAGER,
+        samples: {
+          lowStockCount: 1,
+          outOfStockCount: 1,
+          expiringCount: 0,
+          expiredCount: 0,
+        },
+      });
+      expect(tasks[0]).toMatchObject({
+        id: "samples-low-stock",
+        priority: "critical",
+      });
+    });
+
+    it("surfaces a critical task for expired sample lots", () => {
+      const tasks = buildTodayTasks(makeSummary(), {
+        ...MANAGER,
+        samples: {
+          lowStockCount: 0,
+          outOfStockCount: 0,
+          expiringCount: 0,
+          expiredCount: 1,
+        },
+      });
+      expect(tasks[0]).toMatchObject({
+        id: "samples-expired",
+        priority: "critical",
+      });
+    });
+
+    it("surfaces a medium task for samples expiring soon", () => {
+      const tasks = buildTodayTasks(makeSummary(), {
+        ...MANAGER,
+        samples: {
+          lowStockCount: 0,
+          outOfStockCount: 0,
+          expiringCount: 3,
+          expiredCount: 0,
+        },
+      });
+      expect(tasks[0]).toMatchObject({
+        id: "samples-expiring-soon",
+        priority: "medium",
+      });
+    });
+
+    it("produces no sample tasks when samples context is absent", () => {
+      const tasks = buildTodayTasks(makeSummary(), MANAGER);
+      expect(tasks.some((t) => t.id.startsWith("samples-"))).toBe(false);
+    });
+
+    it("clears sample tasks once inventory is resolved", () => {
+      const active = buildTodayTasks(makeSummary(), {
+        ...MANAGER,
+        samples: {
+          lowStockCount: 1,
+          outOfStockCount: 0,
+          expiringCount: 0,
+          expiredCount: 0,
+        },
+      });
+      expect(active.some((t) => t.id === "samples-low-stock")).toBe(true);
+
+      const resolved = buildTodayTasks(makeSummary(), {
+        ...MANAGER,
+        samples: {
+          lowStockCount: 0,
+          outOfStockCount: 0,
+          expiringCount: 0,
+          expiredCount: 0,
+        },
+      });
+      expect(resolved.some((t) => t.id === "samples-low-stock")).toBe(false);
+    });
+  });
 });

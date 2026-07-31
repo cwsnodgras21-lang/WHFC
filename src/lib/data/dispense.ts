@@ -13,6 +13,7 @@ export type DispenseKitOption = {
   id: string;
   name: string;
   description: string | null;
+  instructions: string | null;
   defaultLocationId: string | null;
   components: DispenseKitComponentDetail[];
 };
@@ -21,6 +22,7 @@ export type DispenseKitComponentDetail = KitComponentForCalculation & {
   itemId: string;
   itemName: string;
   required: boolean;
+  dosagePresets: number[] | null;
 };
 
 export type DispenseLocationOption = {
@@ -77,6 +79,7 @@ export async function getDispensePageData(
         id,
         name,
         description,
+        instructions,
         default_location_id,
         procedure_kit_components (
           id,
@@ -93,12 +96,15 @@ export async function getDispensePageData(
           concentration_volume,
           concentration_volume_unit,
           required,
+          display_order,
+          dosage_presets,
           items ( item_name )
         )
       `
       )
       .eq("active", true)
-      .order("name"),
+      .order("name")
+      .order("display_order", { referencedTable: "procedure_kit_components" }),
     supabase
       .from("locations")
       .select("id, location_name")
@@ -122,6 +128,7 @@ export async function getDispensePageData(
     id: kit.id,
     name: kit.name,
     description: kit.description,
+    instructions: kit.instructions,
     defaultLocationId: kit.default_location_id,
     components: (kit.procedure_kit_components ?? []).map((c) => {
       const item = c.items as { item_name: string } | null;
@@ -147,6 +154,7 @@ export async function getDispensePageData(
             : null,
         concentrationVolumeUnit: c.concentration_volume_unit,
         required: c.required,
+        dosagePresets: c.dosage_presets,
       };
     }),
   }));

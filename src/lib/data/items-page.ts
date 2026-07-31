@@ -7,6 +7,21 @@ import type { Database } from "@/lib/types/database";
 
 type Client = SupabaseClient<Database>;
 
+/**
+ * Expiration warning day precedence: item override > category override >
+ * organization default > hard fallback. Mirrors the same precedence applied
+ * server-side in the inventory_lot_stock / sample_lot_stock / sample_product_stock
+ * views, so display here and the DB-derived "expiring soon" status always agree.
+ */
+export function resolveExpirationWarningDays(
+  itemOverride: number | null | undefined,
+  categoryOverride: number | null | undefined,
+  organizationDefault: number | null | undefined,
+  hardFallback = 90
+): number {
+  return itemOverride ?? categoryOverride ?? organizationDefault ?? hardFallback;
+}
+
 export type ItemCatalogRow = {
   id: string;
   itemName: string;
@@ -23,7 +38,8 @@ export type ItemCatalogRow = {
   active: boolean;
   trackExpiration: boolean;
   trackLotNumber: boolean;
-  expirationWarningDays: number;
+  expirationWarningDays: number | null;
+  resolvedExpirationWarningDays: number;
   packQuantity: number | null;
   hasTransactions: boolean;
 };
@@ -101,21 +117,35 @@ export async function getItemsPageData(
     };
   }
 
-  const [itemsResult, categoriesResult, unitsResult, vendorsResult, txResult] =
-    await Promise.all([
+  const [
+    itemsResult,
+    categoriesResult,
+    unitsResult,
+    vendorsResult,
+    txResult,
+    orgResult,
+  ] = await Promise.all([
       supabase
         .from("items")
         .select(
           "id, item_name, internal_sku, reorder_point, par_level, active, category_id, unit_of_measure_id, preferred_vendor_id, track_expiration, track_lot_number, expiration_warning_days, pack_quantity"
         )
         .order("item_name"),
-      supabase.from("categories").select("id, name, active").order("name"),
+      supabase
+        .from("categories")
+        .select("id, name, active, expiration_warning_days")
+        .order("name"),
       supabase
         .from("units_of_measure")
         .select("id, name, abbreviation, active")
         .order("name"),
       supabase.from("vendors").select("id, name, active").order("name"),
       supabase.from("inventory_transactions").select("item_id"),
+      supabase
+        .from("organizations")
+        .select("default_expiration_warning_days")
+        .limit(1)
+        .maybeSingle(),
     ]);
 
   const errors: string[] = [];
@@ -128,6 +158,14 @@ export async function getItemsPageData(
   const categoryMap = new Map(
     (categoriesResult.data ?? []).map((row) => [row.id, row.name])
   );
+  const categoryWarningDaysMap = new Map(
+    (categoriesResult.data ?? []).map((row) => [
+      row.id,
+      row.expiration_warning_days,
+    ])
+  );
+  const orgDefaultWarningDays =
+    orgResult.data?.default_expiration_warning_days ?? 90;
   const unitMap = new Map(
     (unitsResult.data ?? []).map((row) => [
       row.id,
@@ -166,7 +204,15 @@ export async function getItemsPageData(
       active: row.active,
       trackExpiration: row.track_expiration,
       trackLotNumber: row.track_lot_number,
-      expirationWarningDays: Number(row.expiration_warning_days),
+      expirationWarningDays:
+        row.expiration_warning_days === null
+          ? null
+          : Number(row.expiration_warning_days),
+      resolvedExpirationWarningDays: resolveExpirationWarningDays(
+        row.expiration_warning_days,
+        categoryWarningDaysMap.get(row.category_id),
+        orgDefaultWarningDays
+      ),
       packQuantity: row.pack_quantity,
       hasTransactions: txItemIds.has(row.id),
     };
@@ -207,7 +253,8 @@ export function itemToFormDefaults(item: ItemCatalogRow): {
     active: item.active,
     trackExpiration: item.trackExpiration,
     trackLotNumber: item.trackLotNumber,
-    expirationWarningDays: String(item.expirationWarningDays),
+    expirationWarningDays:
+      item.expirationWarningDays !== null ? String(item.expirationWarningDays) : "",
     packQuantity: item.packQuantity !== null ? String(item.packQuantity) : "",
   };
 }

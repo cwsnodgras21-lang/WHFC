@@ -1,4 +1,5 @@
 import { ItemsCatalog } from "@/components/items/items-catalog";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -19,6 +20,7 @@ export function ItemsPageContent({
       <PageHeader
         title="Items"
         description="Manage your supply catalog, product codes, and minimum stocking levels."
+        actions={<HelpButton topic="items" />}
       />
 
       {!data.canView ? (

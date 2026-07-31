@@ -7,6 +7,7 @@ import { requireSession } from "@/lib/auth/session";
 import { getDashboardSummary } from "@/lib/data/dashboard";
 import { getRecentActivity } from "@/lib/data/activity-feed";
 import { getImagingHighlights } from "@/lib/data/imaging-page";
+import { getSamplesHighlights } from "@/lib/data/samples";
 import { isModuleEnabled } from "@/lib/modules/definitions";
 import { getOrganizationModules } from "@/lib/modules/fetch";
 import { createClient } from "@/lib/supabase/server";
@@ -16,11 +17,14 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const modules = await getOrganizationModules();
 
-  const [summary, recentActivity, imaging] = await Promise.all([
+  const [summary, recentActivity, imaging, samples] = await Promise.all([
     getDashboardSummary(),
     getRecentActivity(supabase, session),
     isModuleEnabled(modules, "imaging_log")
       ? getImagingHighlights(supabase, session)
+      : Promise.resolve(null),
+    isModuleEnabled(modules, "samples")
+      ? getSamplesHighlights(supabase, session)
       : Promise.resolve(null),
   ]);
   const { role, active } = session.profile;
@@ -31,6 +35,7 @@ export default async function DashboardPage() {
       recentActivity={recentActivity.items}
       recentActivityError={recentActivity.loadError}
       imaging={imaging}
+      samples={samples}
       canManagePoDrafts={canManagePurchaseOrderDrafts(role, active)}
       canManageCounts={canManagePhysicalCounts(role, active)}
     />

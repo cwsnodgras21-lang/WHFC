@@ -43,5 +43,23 @@ describe("navigation", () => {
     expect(hrefs).toContain("/dashboard");
     expect(hrefs).toContain("/reorder-report");
     expect(hrefs).toContain("/reorder-suggestions");
+    expect(hrefs).toContain("/samples");
+  });
+
+  it("gives medic a minimized nav: clinical actions only, no admin/purchasing", () => {
+    const medicNav = getNavItemsForRole("medic");
+    const hrefs = medicNav.map((item) => item.href);
+
+    expect(hrefs).toContain("/dashboard");
+    expect(hrefs).toContain("/consume");
+    expect(hrefs).toContain("/dispense");
+    expect(hrefs).toContain("/samples/dispense");
+
+    expect(hrefs).not.toContain("/receive");
+    expect(hrefs).not.toContain("/transfer");
+    expect(hrefs).not.toContain("/physical-counts");
+    expect(hrefs).not.toContain("/administration");
+    expect(hrefs).not.toContain("/reorder-suggestions");
+    expect(hrefs).not.toContain("/reorder-report");
   });
 });

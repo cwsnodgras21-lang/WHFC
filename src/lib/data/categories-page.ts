@@ -13,6 +13,7 @@ export type CategoryRow = {
   id: string;
   name: string;
   description: string | null;
+  expirationWarningDays: number | null;
   active: boolean;
 };
 
@@ -49,7 +50,7 @@ export async function getCategoriesPageData(
 
   const { data, error } = await supabase
     .from("categories")
-    .select("id, name, description, active")
+    .select("id, name, description, expiration_warning_days, active")
     .order("name");
 
   return {
@@ -60,6 +61,7 @@ export async function getCategoriesPageData(
       id: row.id,
       name: row.name,
       description: row.description,
+      expirationWarningDays: row.expiration_warning_days,
       active: row.active,
     })),
     loadError: error?.message ?? null,

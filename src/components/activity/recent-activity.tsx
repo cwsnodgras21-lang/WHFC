@@ -8,6 +8,7 @@ import {
   ClipboardList,
   FileText,
   Package,
+  Pill,
   ScanLine,
   Settings,
   Store,
@@ -43,6 +44,7 @@ const MODULE_ICONS: Record<ActivityModule, LucideIcon> = {
   imaging: ScanLine,
   counts: ClipboardList,
   system: Settings,
+  samples: Pill,
 };
 
 /** Best-effort deep link to the workflow a module's events belong to. */
@@ -53,6 +55,7 @@ const MODULE_HREF: Partial<Record<ActivityModule, string>> = {
   purchasing: "/purchase-order-drafts",
   imaging: "/imaging",
   counts: "/physical-counts",
+  samples: "/samples",
 };
 
 const SEVERITY_DOT: Record<ActivitySeverity, string> = {

@@ -53,4 +53,23 @@ describe("saveItemVendorSchema", () => {
       saveItemVendorSchema.safeParse({ itemId: ITEM, vendorId: "" }).success
     ).toBe(false);
   });
+
+  it("defaults active to true and coerces minimum order quantity", () => {
+    const parsed = saveItemVendorSchema.parse({
+      itemId: ITEM,
+      vendorId: VENDOR,
+      minimumOrderQuantity: "12",
+    });
+    expect(parsed.active).toBe(true);
+    expect(parsed.minimumOrderQuantity).toBe(12);
+  });
+
+  it("allows an administrator to mark a sourcing relationship inactive", () => {
+    const parsed = saveItemVendorSchema.parse({
+      itemId: ITEM,
+      vendorId: VENDOR,
+      active: false,
+    });
+    expect(parsed.active).toBe(false);
+  });
 });

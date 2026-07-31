@@ -29,11 +29,13 @@ type ItemVendorFormDialogProps = {
 const emptyDefaults: ItemVendorFormValues = {
   vendorId: "",
   isPreferred: false,
+  active: true,
   vendorSku: "",
   manufacturer: "",
   manufacturerPartNumber: "",
   packSize: "",
   typicalOrderQuantity: "",
+  minimumOrderQuantity: "",
   leadTimeDays: "",
   typicalCost: "",
   lastOrderDate: "",
@@ -67,11 +69,13 @@ export function ItemVendorFormDialog({
       reset({
         vendorId: source.vendorId,
         isPreferred: source.isPreferred,
+        active: source.active,
         vendorSku: source.vendorSku ?? "",
         manufacturer: source.manufacturer ?? "",
         manufacturerPartNumber: source.manufacturerPartNumber ?? "",
         packSize: source.packSize ?? "",
         typicalOrderQuantity: source.typicalOrderQuantity ?? "",
+        minimumOrderQuantity: source.minimumOrderQuantity ?? "",
         leadTimeDays: source.leadTimeDays ?? "",
         typicalCost: source.typicalCost ?? "",
         lastOrderDate: source.lastOrderDate ?? "",
@@ -166,6 +170,15 @@ export function ItemVendorFormDialog({
               Preferred vendor for this item
             </label>
 
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                disabled={isPending}
+                {...register("active")}
+              />{" "}
+              Active sourcing relationship
+            </label>
+
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 id="vendorSku"
@@ -220,6 +233,20 @@ export function ItemVendorFormDialog({
                   min="0"
                   disabled={isPending}
                   {...register("typicalOrderQuantity")}
+                />
+              </FormField>
+              <FormField
+                id="minimumOrderQuantity"
+                label="Minimum order qty"
+                error={errors.minimumOrderQuantity?.message}
+              >
+                <FormInput
+                  id="minimumOrderQuantity"
+                  type="number"
+                  step="any"
+                  min="0"
+                  disabled={isPending}
+                  {...register("minimumOrderQuantity")}
                 />
               </FormField>
               <FormField

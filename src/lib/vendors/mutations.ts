@@ -89,6 +89,7 @@ export async function executeQuickCreateVendor(
     contactEmail: null,
     contactPhone: null,
     website: null,
+    shippingMinimum: null,
     active: true,
   });
 }
@@ -158,6 +159,7 @@ export async function insertVendor(
       contact_email: input.contactEmail,
       contact_phone: input.contactPhone,
       website: input.website,
+      shipping_minimum: input.shippingMinimum,
       active: input.active,
     })
     .select("id")
@@ -190,6 +192,7 @@ export async function updateVendorRecord(
       contact_email: input.contactEmail,
       contact_phone: input.contactPhone,
       website: input.website,
+      shipping_minimum: input.shippingMinimum,
       active: input.active,
     })
     .eq("id", input.id)

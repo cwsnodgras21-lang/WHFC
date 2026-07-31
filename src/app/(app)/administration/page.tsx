@@ -27,6 +27,11 @@ export default async function AdministrationPage() {
       title: "Units of measure",
       description: "Define stocking units for items.",
     },
+    {
+      href: "/administration/expiration-settings",
+      title: "Expiration settings",
+      description: "Set clinic-wide expiration warning defaults.",
+    },
     ...(showModuleSettings
       ? [
           {

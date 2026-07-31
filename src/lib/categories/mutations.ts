@@ -87,6 +87,7 @@ export async function executeQuickCreateCategory(
   return insertCategory(supabase, {
     name: parsed.data.name,
     description: null,
+    expirationWarningDays: null,
     active: true,
   });
 }
@@ -154,6 +155,7 @@ export async function insertCategory(
     .insert({
       name: input.name,
       description: input.description,
+      expiration_warning_days: input.expirationWarningDays,
       active: input.active,
     })
     .select("id")
@@ -175,6 +177,7 @@ export async function updateCategoryRecord(
     .update({
       name: input.name,
       description: input.description,
+      expiration_warning_days: input.expirationWarningDays,
       active: input.active,
     })
     .eq("id", input.id)

@@ -9,6 +9,7 @@ export const MODULE_KEYS = [
   "analytics",
   "integrations",
   "imaging_log",
+  "samples",
 ] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];

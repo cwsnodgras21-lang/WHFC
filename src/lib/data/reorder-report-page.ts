@@ -91,7 +91,10 @@ export async function getReorderReportPageData(
   session: AppSession,
   filters: ReorderReportPageFilters
 ): Promise<ReorderReportPageData> {
-  const canView = canViewReorderReport(session.profile.active);
+  const canView = canViewReorderReport(
+    session.profile.role,
+    session.profile.active
+  );
   const canManage = canManageReorderSuggestions(
     session.profile.role,
     session.profile.active

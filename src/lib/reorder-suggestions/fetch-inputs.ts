@@ -31,6 +31,7 @@ export async function fetchReorderSuggestionInputs(supabase: Client, now = new D
     lotsResult,
     consumeResult,
     actionsResult,
+    preferredSourcesResult,
   ] = await Promise.all([
     supabase
       .from("items")
@@ -43,7 +44,7 @@ export async function fetchReorderSuggestionInputs(supabase: Client, now = new D
         par_level,
         track_expiration,
         preferred_vendor_id,
-        vendors ( name ),
+        vendors ( name, shipping_minimum ),
         units_of_measure ( abbreviation )
       `
       )
@@ -70,6 +71,11 @@ export async function fetchReorderSuggestionInputs(supabase: Client, now = new D
       .from("reorder_suggestion_actions")
       .select("item_id, location_id, action, dismissed_until, created_at")
       .order("created_at", { ascending: false }),
+    supabase
+      .from("item_vendors")
+      .select("item_id, lead_time_days, ordering_url")
+      .eq("is_preferred", true)
+      .eq("active", true),
   ]);
 
   const error =
@@ -78,15 +84,24 @@ export async function fetchReorderSuggestionInputs(supabase: Client, now = new D
     onHandResult.error ??
     lotsResult.error ??
     consumeResult.error ??
-    actionsResult.error;
+    actionsResult.error ??
+    preferredSourcesResult.error;
 
   if (error) {
     throw new Error(error.message);
   }
 
+  const preferredSourceByItemId = new Map(
+    (preferredSourcesResult.data ?? []).map((row) => [
+      row.item_id,
+      { leadTimeDays: row.lead_time_days, orderingUrl: row.ordering_url },
+    ])
+  );
+
   const items: ReorderItemMeta[] = (itemsResult.data ?? []).map((item) => {
-    const vendor = item.vendors as { name: string } | null;
+    const vendor = item.vendors as { name: string; shipping_minimum: number | null } | null;
     const unit = item.units_of_measure as { abbreviation: string } | null;
+    const preferredSource = preferredSourceByItemId.get(item.id);
     return {
       itemId: item.id,
       itemName: item.item_name,
@@ -96,6 +111,12 @@ export async function fetchReorderSuggestionInputs(supabase: Client, now = new D
       parLevel: Number(item.par_level),
       preferredVendorId: item.preferred_vendor_id,
       vendorName: vendor?.name ?? null,
+      vendorShippingMinimum:
+        vendor?.shipping_minimum === undefined || vendor?.shipping_minimum === null
+          ? null
+          : Number(vendor.shipping_minimum),
+      vendorLeadTimeDays: preferredSource?.leadTimeDays ?? null,
+      vendorOrderingUrl: preferredSource?.orderingUrl ?? null,
       trackExpiration: item.track_expiration,
     };
   });

@@ -24,6 +24,9 @@ const item: ReorderItemMeta = {
   parLevel: 100,
   preferredVendorId: "vendor-1",
   vendorName: "MedSupply Co",
+  vendorShippingMinimum: 150,
+  vendorLeadTimeDays: 5,
+  vendorOrderingUrl: "https://medsupply.example.com/order",
   trackExpiration: true,
 };
 

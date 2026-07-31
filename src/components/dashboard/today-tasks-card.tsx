@@ -6,6 +6,7 @@ import {
   FileCheck,
   FileText,
   PackageMinus,
+  Pill,
   ScanLine,
   TrendingDown,
   type LucideIcon,
@@ -29,6 +30,9 @@ const TASK_ICONS: Record<TaskIconKey, LucideIcon> = {
   "imaging-appointment": CalendarDays,
   "imaging-auth": FileCheck,
   "imaging-overdue": ScanLine,
+  "samples-low": Pill,
+  "samples-expiring": Pill,
+  "samples-expired": Pill,
 };
 
 type PriorityBadgeVariant = "danger" | "warning" | "caution" | "info";

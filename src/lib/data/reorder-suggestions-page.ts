@@ -29,7 +29,10 @@ export async function getReorderSuggestionsPageData(
   supabase: Client,
   session: AppSession
 ): Promise<ReorderSuggestionsPageData> {
-  const canView = canViewReorderSuggestions(session.profile.active);
+  const canView = canViewReorderSuggestions(
+    session.profile.role,
+    session.profile.active
+  );
   const canManage = canManageReorderSuggestions(
     session.profile.role,
     session.profile.active

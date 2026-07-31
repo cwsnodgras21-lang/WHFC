@@ -87,6 +87,7 @@ describe("category mutations", () => {
     const result = await insertCategory(supabase, {
       name: "PPE",
       description: null,
+      expirationWarningDays: null,
       active: true,
     });
     expect(result.success).toBe(false);

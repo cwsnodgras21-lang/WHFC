@@ -15,8 +15,10 @@ import {
   Package,
   PackageMinus,
   PackagePlus,
+  Pill,
   ScrollText,
   Settings,
+  Syringe,
   TrendingDown,
 } from "lucide-react";
 
@@ -51,6 +53,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   inventory_manager: "Inventory Manager",
   staff: "Staff",
   read_only: "Read Only",
+  medic: "Medic",
 };
 
 export const NAV_ITEMS: NavItem[] = [
@@ -69,14 +72,14 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Use stock",
     icon: PackageMinus,
     group: "inventory",
-    roles: ["administrator", "inventory_manager", "staff"],
+    roles: ["administrator", "inventory_manager", "staff", "medic"],
   },
   {
     href: "/dispense",
     label: "Dispense",
     icon: FlaskConical,
     group: "inventory",
-    roles: ["administrator", "inventory_manager", "staff"],
+    roles: ["administrator", "inventory_manager", "staff", "medic"],
     module: "procedure_kits",
   },
   {
@@ -115,12 +118,36 @@ export const NAV_ITEMS: NavItem[] = [
     group: "clinic",
     module: "imaging_log",
   },
+  {
+    href: "/samples",
+    label: "Samples",
+    icon: Pill,
+    group: "clinic",
+    module: "samples",
+  },
+  {
+    href: "/samples/receive",
+    label: "Receive Samples",
+    icon: PackagePlus,
+    group: "clinic",
+    roles: ["administrator", "inventory_manager", "staff"],
+    module: "samples",
+  },
+  {
+    href: "/samples/dispense",
+    label: "Give Sample",
+    icon: Syringe,
+    group: "clinic",
+    roles: ["administrator", "inventory_manager", "staff", "medic"],
+    module: "samples",
+  },
   { href: "/transactions", label: "Transactions", icon: ScrollText, group: "reporting" },
   {
     href: "/reorder-suggestions",
     label: "Reorder Suggestions",
     icon: TrendingDown,
     group: "reporting",
+    roles: ["administrator", "inventory_manager", "staff", "read_only"],
     module: "reorder_suggestions",
   },
   {
@@ -136,6 +163,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Reorder Report",
     icon: TrendingDown,
     group: "reporting",
+    roles: ["administrator", "inventory_manager", "staff", "read_only"],
     module: "analytics",
   },
   {

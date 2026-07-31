@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { GettingStartedCard } from "@/components/dashboard/getting-started-card";
+import { SamplesCard } from "@/components/dashboard/samples-card";
+import { HelpButton } from "@/components/help/help-button";
 import { MovementTrendChart } from "@/components/dashboard/charts/movement-trend-chart";
 import { ProcedureConsumptionChart } from "@/components/dashboard/charts/procedure-consumption-chart";
 import { ProcedureUsageChart } from "@/components/dashboard/charts/procedure-usage-chart";
@@ -11,6 +13,7 @@ import { TodayTasksCard } from "@/components/dashboard/today-tasks-card";
 import { RecentActivity } from "@/components/activity/recent-activity";
 import type { ActivityFeedItem } from "@/lib/data/activity-feed";
 import type { ImagingHighlights } from "@/lib/data/imaging-page";
+import type { SamplesHighlights } from "@/lib/data/samples";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -27,6 +30,7 @@ type DashboardContentProps = {
   recentActivity: ActivityFeedItem[];
   recentActivityError: string | null;
   imaging: ImagingHighlights | null;
+  samples: SamplesHighlights | null;
   canManagePoDrafts: boolean;
   canManageCounts: boolean;
 };
@@ -36,6 +40,7 @@ export function DashboardContent({
   recentActivity,
   recentActivityError,
   imaging,
+  samples,
   canManagePoDrafts,
   canManageCounts,
 }: DashboardContentProps) {
@@ -43,11 +48,13 @@ export function DashboardContent({
   const hasLowStock = summary.belowReorderCount > 0;
   const showAnalytics = isModuleEnabled(modules, "analytics");
   const showReorderSuggestions = isModuleEnabled(modules, "reorder_suggestions");
+  const showSamples = isModuleEnabled(modules, "samples");
 
   const todayTasks = buildTodayTasks(summary, {
     canManageCounts,
     canManagePoDrafts,
     imaging,
+    samples,
   });
 
   const lowStockHref = showReorderSuggestions
@@ -61,6 +68,7 @@ export function DashboardContent({
       <PageHeader
         title="Inventory overview"
         description="See what is on hand, what needs attention, and what to do next."
+        actions={<HelpButton topic="dashboard" />}
       />
 
       {summary.errors.length > 0 ? (
@@ -384,6 +392,8 @@ export function DashboardContent({
           />
         )}
       </section>
+
+      {showSamples && samples ? <SamplesCard summary={samples} /> : null}
 
       <RecentActivity
         items={recentActivity}

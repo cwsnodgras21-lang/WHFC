@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ModulesSettingsForm } from "@/components/admin/modules-settings-form";
+import { HelpButton } from "@/components/help/help-button";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
 import type { AdminModulesPageData } from "@/lib/data/admin-modules-page";
@@ -34,9 +35,12 @@ export function AdminModulesPageContent({ data }: AdminModulesPageContentProps) 
         title="Module settings"
         description="Turn broad capabilities on or off for a simpler daily experience. Disabled modules stay in the codebase but are hidden from navigation and blocked when accessed directly."
         actions={
-          <Link href="/administration" className="btn btn-secondary">
-            Administration
-          </Link>
+          <>
+            <Link href="/administration" className="btn btn-secondary">
+              Administration
+            </Link>
+            <HelpButton topic="settings" />
+          </>
         }
       />
 

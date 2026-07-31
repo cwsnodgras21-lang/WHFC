@@ -29,6 +29,7 @@ type CategoryFormDialogProps = {
 const emptyDefaults: CategoryFormValues = {
   name: "",
   description: "",
+  expirationWarningDays: "",
   active: true,
 };
 
@@ -59,6 +60,10 @@ export function CategoryFormDialog({
       reset({
         name: category.name,
         description: category.description ?? "",
+        expirationWarningDays:
+          category.expirationWarningDays !== null
+            ? String(category.expirationWarningDays)
+            : "",
         active: category.active,
       });
       return;
@@ -82,6 +87,9 @@ export function CategoryFormDialog({
       const payload = {
         name: values.name.trim(),
         description: values.description?.trim() ? values.description.trim() : null,
+        expirationWarningDays: values.expirationWarningDays
+          ? Number(values.expirationWarningDays)
+          : null,
         active: values.active,
       };
 
@@ -125,6 +133,22 @@ export function CategoryFormDialog({
             </FormField>
             <FormField id="categoryDescription" label="Description (optional)" error={errors.description?.message}>
               <FormInput id="categoryDescription" disabled={disabled} {...register("description")} />
+            </FormField>
+            <FormField
+              id="categoryExpirationWarningDays"
+              label="Expiration warning override (days)"
+              hint="Leave blank to use the clinic default for items in this category."
+              error={errors.expirationWarningDays?.message}
+            >
+              <FormInput
+                id="categoryExpirationWarningDays"
+                type="number"
+                min={1}
+                step={1}
+                placeholder="Inherit clinic default"
+                disabled={disabled}
+                {...register("expirationWarningDays")}
+              />
             </FormField>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" disabled={disabled} {...register("active")} />

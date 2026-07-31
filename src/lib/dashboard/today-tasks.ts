@@ -1,5 +1,6 @@
 import type { DashboardSummary } from "@/lib/data/dashboard";
 import type { ImagingHighlights } from "@/lib/data/imaging-page";
+import type { SamplesHighlights } from "@/lib/data/samples";
 import { isModuleEnabled } from "@/lib/modules/definitions";
 
 /**
@@ -27,7 +28,10 @@ export type TaskIconKey =
   | "po-approve"
   | "imaging-appointment"
   | "imaging-auth"
-  | "imaging-overdue";
+  | "imaging-overdue"
+  | "samples-low"
+  | "samples-expiring"
+  | "samples-expired";
 
 export type TodayTask = {
   /** Stable id — one task type can only appear once. */
@@ -53,6 +57,7 @@ export type TodayTaskContext = {
   canManageCounts: boolean;
   canManagePoDrafts: boolean;
   imaging?: ImagingHighlights | null;
+  samples?: SamplesHighlights | null;
 };
 
 const PRIORITY_RANK: Record<TaskPriority, number> = {
@@ -228,18 +233,71 @@ const buildImagingAuthTask: TaskBuilder = (_summary, ctx) => {
   };
 };
 
+/** Sample products at or below their representative-contact threshold, including zero. */
+const buildSamplesLowStockTask: TaskBuilder = (_summary, ctx) => {
+  const low = ctx.samples?.lowStockCount ?? 0;
+  const out = ctx.samples?.outOfStockCount ?? 0;
+  const count = low + out;
+  if (count <= 0) return null;
+
+  return {
+    id: "samples-low-stock",
+    priority: out > 0 ? "critical" : "high",
+    icon: out > 0 ? "samples-expired" : "samples-low",
+    title: "Restock medication samples",
+    description: `${count} sample ${plural(count, "product is", "products are")} at or below the contact threshold${out > 0 ? `, ${out} out of stock` : ""}.`,
+    ctaLabel: "Review samples",
+    href: "/samples",
+  };
+};
+
+/** Sample lots that have already expired but are still counted on hand. */
+const buildSamplesExpiredTask: TaskBuilder = (_summary, ctx) => {
+  const count = ctx.samples?.expiredCount ?? 0;
+  if (count <= 0) return null;
+
+  return {
+    id: "samples-expired",
+    priority: "critical",
+    icon: "samples-expired",
+    title: "Remove expired samples",
+    description: `${count} sample ${plural(count, "product has", "products have")} an expired lot still counted on hand.`,
+    ctaLabel: "Review samples",
+    href: "/samples",
+  };
+};
+
+/** Sample lots approaching expiration — worth using or returning first. */
+const buildSamplesExpiringTask: TaskBuilder = (_summary, ctx) => {
+  const count = ctx.samples?.expiringCount ?? 0;
+  if (count <= 0) return null;
+
+  return {
+    id: "samples-expiring-soon",
+    priority: "medium",
+    icon: "samples-expiring",
+    title: "Review expiring samples",
+    description: `${count} sample ${plural(count, "product has", "products have")} a lot expiring soon.`,
+    ctaLabel: "Review samples",
+    href: "/samples",
+  };
+};
+
 /**
  * Registered builders, in tiebreak order. Priority is the primary sort; builder
  * order here breaks ties between tasks of equal priority.
  */
 const TASK_BUILDERS: readonly TaskBuilder[] = [
   buildExpiredStockTask,
+  buildSamplesExpiredTask,
   buildOpenCountTask,
   buildReorderTask,
   buildLowStockTask,
+  buildSamplesLowStockTask,
   buildImagingAppointmentsTask,
   buildImagingOverdueTask,
   buildExpiringSoonTask,
+  buildSamplesExpiringTask,
   buildImagingAuthTask,
   buildPoApprovalTask,
 ];

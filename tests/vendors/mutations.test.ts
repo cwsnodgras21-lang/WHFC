@@ -48,6 +48,19 @@ describe("vendor mutations", () => {
     }
   });
 
+  it("accepts a free-shipping / order minimum for the vendor", async () => {
+    const supabase = createMockSupabase({});
+    const result = await executeCreateVendor(supabase, managerSession, {
+      name: "MedSupply Co",
+      contactEmail: null,
+      contactPhone: null,
+      website: null,
+      shippingMinimum: "150",
+      active: true,
+    });
+    expect(result.success).toBe(true);
+  });
+
   it("maps duplicate vendor names", async () => {
     const supabase = createMockSupabase({
       insertResult: {
@@ -60,6 +73,7 @@ describe("vendor mutations", () => {
       contactEmail: null,
       contactPhone: null,
       website: null,
+      shippingMinimum: null,
       active: true,
     });
     expect(result.success).toBe(false);

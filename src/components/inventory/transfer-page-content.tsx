@@ -1,4 +1,5 @@
 import { TransferInventoryForm } from "@/components/inventory/transfer-inventory-form";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -12,6 +13,7 @@ export function TransferPageContent({ data }: TransferPageContentProps) {
   return (
     <div className="space-y-6">
       <PageHeader
+        actions={<HelpButton topic="transfer" />}
         title="Transfer stock"
         description="Move stock from one storage area to another."
       />

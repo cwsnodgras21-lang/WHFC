@@ -33,12 +33,17 @@ describe("canReceiveInventory", () => {
     expect(canReceiveInventory("read_only", true)).toBe(false);
   });
 
+  it("denies medic — receiving is not part of the medic workflow", () => {
+    expect(canReceiveInventory("medic", true)).toBe(false);
+  });
+
   it("denies inactive users regardless of role", () => {
     const roles: UserRole[] = [
       "administrator",
       "inventory_manager",
       "staff",
       "read_only",
+      "medic",
     ];
 
     for (const role of roles) {
@@ -58,12 +63,17 @@ describe("canConsumeInventory", () => {
     expect(canConsumeInventory("read_only", true)).toBe(false);
   });
 
+  it("allows medic to use stock", () => {
+    expect(canConsumeInventory("medic", true)).toBe(true);
+  });
+
   it("denies inactive users regardless of role", () => {
     const roles: UserRole[] = [
       "administrator",
       "inventory_manager",
       "staff",
       "read_only",
+      "medic",
     ];
 
     for (const role of roles) {
@@ -79,8 +89,9 @@ describe("canTransferInventory", () => {
     }
   });
 
-  it("denies staff and read-only users", () => {
+  it("denies staff, medic, and read-only users", () => {
     expect(canTransferInventory("staff", true)).toBe(false);
+    expect(canTransferInventory("medic", true)).toBe(false);
     expect(canTransferInventory("read_only", true)).toBe(false);
   });
 
@@ -98,8 +109,9 @@ describe("canManagePhysicalCounts", () => {
     }
   });
 
-  it("denies staff and read-only users", () => {
+  it("denies staff, medic, and read-only users", () => {
     expect(canManagePhysicalCounts("staff", true)).toBe(false);
+    expect(canManagePhysicalCounts("medic", true)).toBe(false);
     expect(canManagePhysicalCounts("read_only", true)).toBe(false);
   });
 });
@@ -111,8 +123,9 @@ describe("canManageItems", () => {
     }
   });
 
-  it("denies staff and read-only users", () => {
+  it("denies staff, medic, and read-only users", () => {
     expect(canManageItems("staff", true)).toBe(false);
+    expect(canManageItems("medic", true)).toBe(false);
     expect(canManageItems("read_only", true)).toBe(false);
   });
 
@@ -144,12 +157,19 @@ describe("canViewTransactions", () => {
 });
 
 describe("canViewReorderReport", () => {
-  it("allows active users to view the reorder report", () => {
-    expect(canViewReorderReport(true)).toBe(true);
+  it("allows active administrators, managers, staff, and read-only users", () => {
+    expect(canViewReorderReport("administrator", true)).toBe(true);
+    expect(canViewReorderReport("inventory_manager", true)).toBe(true);
+    expect(canViewReorderReport("staff", true)).toBe(true);
+    expect(canViewReorderReport("read_only", true)).toBe(true);
+  });
+
+  it("denies medic — purchasing/reorder detail is not part of the medic workflow", () => {
+    expect(canViewReorderReport("medic", true)).toBe(false);
   });
 
   it("denies inactive users", () => {
-    expect(canViewReorderReport(false)).toBe(false);
+    expect(canViewReorderReport("administrator", false)).toBe(false);
   });
 });
 
@@ -160,10 +180,13 @@ describe("location and reference data permissions", () => {
     expect(canManageLocations("inventory_manager", true)).toBe(true);
   });
 
-  it("denies staff", () => {
+  it("denies staff and medic", () => {
     expect(canManageCategories("staff", true)).toBe(false);
     expect(canManageVendors("staff", true)).toBe(false);
     expect(canManageLocations("staff", true)).toBe(false);
+    expect(canManageCategories("medic", true)).toBe(false);
+    expect(canManageVendors("medic", true)).toBe(false);
+    expect(canManageLocations("medic", true)).toBe(false);
   });
 
   it("allows active users to view locations", () => {
@@ -178,8 +201,9 @@ describe("canAccessAdministration", () => {
     expect(canAccessAdministration("inventory_manager", true)).toBe(true);
   });
 
-  it("denies staff and inactive users", () => {
+  it("denies staff, medic, and inactive users", () => {
     expect(canAccessAdministration("staff", true)).toBe(false);
+    expect(canAccessAdministration("medic", true)).toBe(false);
     expect(canAccessAdministration("read_only", true)).toBe(false);
     expect(canAccessAdministration("administrator", false)).toBe(false);
   });
@@ -189,5 +213,30 @@ describe("canManageUnits", () => {
   it("allows administrators only", () => {
     expect(canManageUnits("administrator", true)).toBe(true);
     expect(canManageUnits("inventory_manager", true)).toBe(false);
+  });
+});
+
+describe("medic role — limited clinical access", () => {
+  it("cannot access administrative operations", () => {
+    expect(canAccessAdministration("medic", true)).toBe(false);
+    expect(canManageUnits("medic", true)).toBe(false);
+    expect(canManageItems("medic", true)).toBe(false);
+    expect(canManageVendors("medic", true)).toBe(false);
+    expect(canManageLocations("medic", true)).toBe(false);
+    expect(canManageCategories("medic", true)).toBe(false);
+    expect(canManagePhysicalCounts("medic", true)).toBe(false);
+    expect(canTransferInventory("medic", true)).toBe(false);
+    expect(canReceiveInventory("medic", true)).toBe(false);
+  });
+
+  it("can perform the clinical actions it is scoped for", () => {
+    expect(canConsumeInventory("medic", true)).toBe(true);
+    expect(canViewItems(true)).toBe(true);
+    expect(canViewLocations(true)).toBe(true);
+    expect(canViewTransactions(true)).toBe(true);
+  });
+
+  it("is denied entirely when inactive", () => {
+    expect(canConsumeInventory("medic", false)).toBe(false);
   });
 });

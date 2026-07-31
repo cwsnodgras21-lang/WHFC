@@ -1,4 +1,5 @@
 import { LocationsCatalog } from "@/components/locations/locations-catalog";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -17,6 +18,7 @@ export function LocationsPageContent({
       <PageHeader
         title="Locations"
         description="Manage internal storage locations such as rooms, cabinets, shelves, and bins."
+        actions={<HelpButton topic="locations" />}
       />
       {!data.canView ? (
         <EmptyState

@@ -1444,7 +1444,8 @@ h4 {
   aside,
   header.sticky,
   .reorder-report-no-print,
-  .qr-sheet-no-print {
+  .qr-sheet-no-print,
+  .sample-history-no-print {
     display: none !important;
   }
 

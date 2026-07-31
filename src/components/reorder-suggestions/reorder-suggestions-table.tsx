@@ -12,6 +12,7 @@ import {
   type ReorderSuggestion,
 } from "@/lib/reorder-suggestions/calculate";
 import { formatQuantity } from "@/lib/format/inventory";
+import { safeExternalHref } from "@/lib/security/safe-url";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -122,7 +123,37 @@ export function ReorderSuggestionsTable({
                       </div>
                     </td>
                     <td className="hidden xl:table-cell">
-                      {row.vendorName ?? "—"}
+                      {row.vendorName ? (
+                        <div className="table-cell-stack">
+                          <span className="table-cell-primary">
+                            {safeExternalHref(row.vendorOrderingUrl) ? (
+                              <a
+                                href={safeExternalHref(row.vendorOrderingUrl) ?? undefined}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="link-subtle"
+                              >
+                                {row.vendorName}
+                              </a>
+                            ) : (
+                              row.vendorName
+                            )}
+                          </span>
+                          <span className="table-cell-secondary text-xs text-muted">
+                            {row.vendorLeadTimeDays !== null
+                              ? `Lead time: ${row.vendorLeadTimeDays}d`
+                              : null}
+                            {row.vendorLeadTimeDays !== null && row.vendorShippingMinimum !== null
+                              ? " · "
+                              : null}
+                            {row.vendorShippingMinimum !== null
+                              ? `Free ship: $${formatQuantity(row.vendorShippingMinimum)}+`
+                              : null}
+                          </span>
+                        </div>
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="text-right whitespace-nowrap">
                       <div className="flex flex-wrap justify-end gap-1">

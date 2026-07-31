@@ -23,6 +23,18 @@ export const procedureKitComponentFormSchema = z.object({
   concentrationVolume: z.string().optional(),
   concentrationVolumeUnit: z.string().optional(),
   required: z.boolean(),
+  dosagePresets: z
+    .string()
+    .optional()
+    .refine((v) => {
+      if (!v?.trim()) return true;
+      const parts = v.split(",").map((p) => p.trim()).filter(Boolean);
+      if (parts.length > 8) return false;
+      return parts.every((p) => {
+        const n = Number(p);
+        return !Number.isNaN(n) && n > 0;
+      });
+    }, "Enter up to 8 positive numbers separated by commas."),
 });
 
 export const procedureKitFormSchema = z.object({
@@ -31,6 +43,10 @@ export const procedureKitFormSchema = z.object({
     .min(1, "Enter a kit name.")
     .max(120, "Name is too long."),
   description: z.string().max(500, "Description is too long.").optional(),
+  instructions: z
+    .string()
+    .max(2000, "Instructions are too long.")
+    .optional(),
   categoryId: z.string().optional(),
   active: z.boolean(),
   defaultLocationId: z.string().optional(),
@@ -68,8 +84,21 @@ export const procedureKitComponentSchema = z
     concentrationVolume: optionalPositiveNumber,
     concentrationVolumeUnit: z.string().max(20).optional().nullable(),
     required: z.boolean(),
+    displayOrder: z.coerce.number().int().min(0).default(0),
+    dosagePresets: z
+      .array(z.coerce.number().positive().max(999_999.999))
+      .max(8)
+      .optional()
+      .nullable(),
   })
   .superRefine((data, ctx) => {
+    if (data.dosagePresets && data.dosagePresets.length > 0 && !data.isVariableQuantity) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Dosage presets only apply to adjustable components.",
+        path: ["dosagePresets"],
+      });
+    }
     if (data.isVariableQuantity) {
       if (!data.variableQuantityLabel?.trim()) {
         ctx.addIssue({
@@ -115,6 +144,7 @@ export const saveProcedureKitSchema = z.object({
   id: z.uuid().optional(),
   name: z.string().min(1).max(120),
   description: z.string().max(500).optional().nullable(),
+  instructions: z.string().max(2000).optional().nullable(),
   categoryId: z.uuid().optional().nullable(),
   active: z.boolean(),
   defaultLocationId: z.uuid().optional().nullable(),

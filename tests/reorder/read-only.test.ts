@@ -6,11 +6,15 @@ import { canViewReorderReport } from "@/lib/auth/permissions";
 
 describe("canViewReorderReport", () => {
   it("allows active users to view the report", () => {
-    expect(canViewReorderReport(true)).toBe(true);
+    expect(canViewReorderReport("staff", true)).toBe(true);
   });
 
   it("denies inactive users", () => {
-    expect(canViewReorderReport(false)).toBe(false);
+    expect(canViewReorderReport("staff", false)).toBe(false);
+  });
+
+  it("denies medic — reorder detail is not part of the medic workflow", () => {
+    expect(canViewReorderReport("medic", true)).toBe(false);
   });
 });
 

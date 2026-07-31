@@ -13,6 +13,10 @@ const optionalWebsite = z.union([
     .refine(isSafeHttpUrl, "Enter a valid http(s) URL."),
 ]);
 
+const optionalNonNegativeAmount = z
+  .union([z.literal(""), z.coerce.number().nonnegative("Must be zero or more.")])
+  .optional();
+
 const vendorPayload = z.object({
   name: z
     .string()
@@ -22,6 +26,7 @@ const vendorPayload = z.object({
   contactEmail: z.string().trim().nullable().optional(),
   contactPhone: z.string().trim().max(32, "Phone number is too long.").nullable().optional(),
   website: z.string().trim().nullable().optional(),
+  shippingMinimum: optionalNonNegativeAmount,
   active: z.boolean(),
 });
 
@@ -35,14 +40,20 @@ export const vendorFormSchema = z.object({
     .optional()
     .or(z.literal("")),
   website: optionalWebsite.optional(),
+  shippingMinimum: optionalNonNegativeAmount,
   active: z.boolean(),
 });
+
+function shippingMinimumOrNull(value: number | "" | undefined): number | null {
+  return value === "" || value === undefined ? null : value;
+}
 
 export const createVendorSchema = vendorPayload.transform((data) => ({
   name: data.name.trim(),
   contactEmail: data.contactEmail?.trim() ? data.contactEmail.trim() : null,
   contactPhone: data.contactPhone?.trim() ? data.contactPhone.trim() : null,
   website: data.website?.trim() ? data.website.trim() : null,
+  shippingMinimum: shippingMinimumOrNull(data.shippingMinimum),
   active: data.active,
 }));
 
@@ -54,10 +65,11 @@ export const updateVendorSchema = vendorPayload
     contactEmail: data.contactEmail?.trim() ? data.contactEmail.trim() : null,
     contactPhone: data.contactPhone?.trim() ? data.contactPhone.trim() : null,
     website: data.website?.trim() ? data.website.trim() : null,
+    shippingMinimum: shippingMinimumOrNull(data.shippingMinimum),
     active: data.active,
   }));
 
-export type VendorFormValues = z.infer<typeof vendorFormSchema>;
+export type VendorFormValues = z.input<typeof vendorFormSchema>;
 export type CreateVendorInput = z.infer<typeof createVendorSchema>;
 export type UpdateVendorInput = z.infer<typeof updateVendorSchema>;
 

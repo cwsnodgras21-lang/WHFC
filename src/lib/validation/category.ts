@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+const expirationWarningDaysField = z.coerce
+  .number()
+  .int()
+  .positive()
+  .max(3650)
+  .optional()
+  .nullable();
+
 const categoryPayload = z.object({
   name: z
     .string()
@@ -12,6 +20,7 @@ const categoryPayload = z.object({
     .max(500, "Description is too long.")
     .optional()
     .nullable(),
+  expirationWarningDays: expirationWarningDaysField,
   active: z.boolean(),
 });
 
@@ -23,12 +32,21 @@ export const categoryFormSchema = z.object({
     .max(500, "Description is too long.")
     .optional()
     .or(z.literal("")),
+  expirationWarningDays: z
+    .string()
+    .optional()
+    .refine((v) => {
+      if (!v) return true;
+      const n = Number(v);
+      return Number.isInteger(n) && n > 0 && n <= 3650;
+    }, "Enter a whole number of days, or leave blank to inherit."),
   active: z.boolean(),
 });
 
 export const createCategorySchema = categoryPayload.transform((data) => ({
   name: data.name.trim(),
   description: data.description?.trim() ? data.description.trim() : null,
+  expirationWarningDays: data.expirationWarningDays ?? null,
   active: data.active,
 }));
 
@@ -38,6 +56,7 @@ export const updateCategorySchema = categoryPayload
     id: data.id,
     name: data.name.trim(),
     description: data.description?.trim() ? data.description.trim() : null,
+    expirationWarningDays: data.expirationWarningDays ?? null,
     active: data.active,
   }));
 

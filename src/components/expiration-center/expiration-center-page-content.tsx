@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ExpirationFiltersForm } from "@/components/expiration-center/expiration-filters-form";
 import { ExpirationLotsTable } from "@/components/expiration-center/expiration-lots-table";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { LinkButton } from "@/components/ui/button";
@@ -45,9 +46,12 @@ export function ExpirationCenterPageContent({
         title="Expiration center"
         description="Find expiring and expired stock, then dispose, adjust, transfer, or reorder it."
         actions={
-          <LinkButton href="/expiration/history" variant="secondary">
-            Expiration history
-          </LinkButton>
+          <>
+            <LinkButton href="/expiration/history" variant="secondary">
+              Expiration history
+            </LinkButton>
+            <HelpButton topic="expiration" />
+          </>
         }
       />
 

@@ -42,6 +42,7 @@ const emptyComponent = (): ProcedureKitFormValues["components"][number] => ({
   concentrationVolume: "1",
   concentrationVolumeUnit: "mL",
   required: true,
+  dosagePresets: "",
 });
 
 export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
@@ -52,6 +53,7 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
   const defaultValues: ProcedureKitFormValues = {
     name: data.kit?.name ?? "",
     description: data.kit?.description ?? "",
+    instructions: data.kit?.instructions ?? "",
     categoryId: data.kit?.categoryId ?? "",
     active: data.kit?.active ?? true,
     defaultLocationId: data.kit?.defaultLocationId ?? "",
@@ -73,6 +75,9 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
           c.concentrationVolume !== null ? String(c.concentrationVolume) : "1",
         concentrationVolumeUnit: c.concentrationVolumeUnit ?? "mL",
         required: c.required,
+        dosagePresets: c.dosagePresets?.length
+          ? c.dosagePresets.join(", ")
+          : "",
       })) ?? [emptyComponent()],
   };
 
@@ -87,7 +92,7 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
     defaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control,
     name: "components",
   });
@@ -101,10 +106,11 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
         id: kitId,
         name: values.name,
         description: values.description || null,
+        instructions: values.instructions || null,
         categoryId: values.categoryId || null,
         active: values.active,
         defaultLocationId: values.defaultLocationId || null,
-        components: values.components.map((c) => ({
+        components: values.components.map((c, index) => ({
           id: c.id || undefined,
           itemId: c.itemId,
           quantity: c.isVariableQuantity ? 1 : Number(c.quantity),
@@ -140,6 +146,14 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
               ? c.concentrationVolumeUnit
               : null,
           required: c.required,
+          displayOrder: index,
+          dosagePresets:
+            c.isVariableQuantity && c.dosagePresets?.trim()
+              ? c.dosagePresets
+                  .split(",")
+                  .map((p) => Number(p.trim()))
+                  .filter((n) => !Number.isNaN(n) && n > 0)
+              : null,
         })),
       });
 
@@ -227,6 +241,22 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
             disabled={isPending}
           />
         </FormField>
+
+        <FormField
+          id="instructions"
+          label="Instructions / internal notes"
+          className="mt-4"
+          error={errors.instructions?.message}
+        >
+          <textarea
+            id="instructions"
+            rows={3}
+            className="form-input"
+            placeholder="Shown to staff before they dispense this kit. Not a clinical record — no patient information."
+            {...register("instructions")}
+            disabled={isPending}
+          />
+        </FormField>
       </FormSection>
 
       <FormSection
@@ -244,6 +274,30 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
 
             return (
               <div key={field.id} className="rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-fg-muted">
+                    Order {index + 1} of {fields.length}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={isPending || index === 0}
+                      onClick={() => move(index, index - 1)}
+                    >
+                      Move up
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={isPending || index === fields.length - 1}
+                      onClick={() => move(index, index + 1)}
+                    >
+                      Move down
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="form-grid">
                   <FormField id={`component-item-${index}`} label="Item">
                     <FormSelect
@@ -368,6 +422,21 @@ export function ProcedureKitEditor({ data, kitId }: ProcedureKitEditorProps) {
                         />
                       </FormField>
                     ) : null}
+
+                    <FormField
+                      id={`component-presets-${index}`}
+                      label="Dosage quick-select presets"
+                      error={errors.components?.[index]?.dosagePresets?.message}
+                    >
+                      <FormInput
+                        placeholder="e.g. 0.25, 0.5, 1.0"
+                        {...register(`components.${index}.dosagePresets`)}
+                        disabled={isPending}
+                      />
+                      <p className="mt-1 text-xs text-fg-muted">
+                        Up to 8 common amounts, comma-separated. Staff will see these as quick-select buttons when dispensing.
+                      </p>
+                    </FormField>
                   </>
                 )}
 

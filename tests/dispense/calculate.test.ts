@@ -70,3 +70,43 @@ describe("calculateKitImpact", () => {
     expect(lines[1]?.quantityToConsume).toBe(1);
   });
 });
+
+describe("microdose decimal precision", () => {
+  const microdoseTestosterone: KitComponentForCalculation = {
+    ...testosteroneMed,
+    id: "var-microdose",
+    concentrationAmount: 200,
+    concentrationVolume: 1,
+  };
+
+  it("preserves small fractional doses without rounding error", () => {
+    // 4 mg administered from a 200 mg/mL vial should consume exactly 0.02 mL.
+    const result = calculateComponentQuantity(microdoseTestosterone, 4);
+    expect(result?.quantityToConsume).toBe(0.02);
+  });
+
+  it("does not deplete the whole vial for a fractional dose", () => {
+    const result = calculateComponentQuantity(microdoseTestosterone, 4);
+    expect(result?.quantityToConsume).toBeLessThan(1);
+    expect(result?.quantityToConsume).toBeGreaterThan(0);
+  });
+
+  it("computes multiplier-based decimal quantities precisely", () => {
+    const multiplierComponent: KitComponentForCalculation = {
+      ...fixedSyringe,
+      id: "var-mult",
+      isVariableQuantity: true,
+      variableQuantityLabel: "Volume drawn",
+      variableQuantityUnit: "mL",
+      calculationType: "multiplier",
+      multiplier: 0.5,
+    };
+    const result = calculateComponentQuantity(multiplierComponent, 0.5);
+    expect(result?.quantityToConsume).toBe(0.25);
+  });
+
+  it("rejects zero and negative administered amounts (returns null)", () => {
+    expect(calculateComponentQuantity(microdoseTestosterone, 0)).toBeNull();
+    expect(calculateComponentQuantity(microdoseTestosterone, -1)).toBeNull();
+  });
+});

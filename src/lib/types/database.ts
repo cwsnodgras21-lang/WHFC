@@ -133,6 +133,7 @@ export type Database = {
           active: boolean
           created_at: string
           description: string | null
+          expiration_warning_days: number | null
           id: string
           name: string
           updated_at: string
@@ -141,6 +142,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           description?: string | null
+          expiration_warning_days?: number | null
           id?: string
           name: string
           updated_at?: string
@@ -149,6 +151,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           description?: string | null
+          expiration_warning_days?: number | null
           id?: string
           name?: string
           updated_at?: string
@@ -483,6 +486,7 @@ export type Database = {
       }
       item_vendors: {
         Row: {
+          active: boolean
           created_at: string
           id: string
           is_preferred: boolean
@@ -491,6 +495,7 @@ export type Database = {
           lead_time_days: number | null
           manufacturer: string | null
           manufacturer_part_number: string | null
+          minimum_order_quantity: number | null
           ordering_notes: string | null
           ordering_url: string | null
           pack_size: string | null
@@ -501,6 +506,7 @@ export type Database = {
           vendor_sku: string | null
         }
         Insert: {
+          active?: boolean
           created_at?: string
           id?: string
           is_preferred?: boolean
@@ -509,6 +515,7 @@ export type Database = {
           lead_time_days?: number | null
           manufacturer?: string | null
           manufacturer_part_number?: string | null
+          minimum_order_quantity?: number | null
           ordering_notes?: string | null
           ordering_url?: string | null
           pack_size?: string | null
@@ -519,6 +526,7 @@ export type Database = {
           vendor_sku?: string | null
         }
         Update: {
+          active?: boolean
           created_at?: string
           id?: string
           is_preferred?: boolean
@@ -527,6 +535,7 @@ export type Database = {
           lead_time_days?: number | null
           manufacturer?: string | null
           manufacturer_part_number?: string | null
+          minimum_order_quantity?: number | null
           ordering_notes?: string | null
           ordering_url?: string | null
           pack_size?: string | null
@@ -558,7 +567,7 @@ export type Database = {
           active: boolean
           category_id: string
           created_at: string
-          expiration_warning_days: number
+          expiration_warning_days: number | null
           id: string
           internal_sku: string
           item_name: string
@@ -575,7 +584,7 @@ export type Database = {
           active?: boolean
           category_id: string
           created_at?: string
-          expiration_warning_days?: number
+          expiration_warning_days?: number | null
           id?: string
           internal_sku: string
           item_name: string
@@ -592,7 +601,7 @@ export type Database = {
           active?: boolean
           category_id?: string
           created_at?: string
-          expiration_warning_days?: number
+          expiration_warning_days?: number | null
           id?: string
           internal_sku?: string
           item_name?: string
@@ -695,18 +704,24 @@ export type Database = {
       organizations: {
         Row: {
           created_at: string
+          default_expiration_warning_days: number
+          default_sample_expiration_warning_days: number
           id: string
           name: string
           slug: string
         }
         Insert: {
           created_at?: string
+          default_expiration_warning_days?: number
+          default_sample_expiration_warning_days?: number
           id?: string
           name: string
           slug: string
         }
         Update: {
           created_at?: string
+          default_expiration_warning_days?: number
+          default_sample_expiration_warning_days?: number
           id?: string
           name?: string
           slug?: string
@@ -931,6 +946,8 @@ export type Database = {
           concentration_volume: number | null
           concentration_volume_unit: string | null
           created_at: string
+          display_order: number
+          dosage_presets: number[] | null
           id: string
           is_variable_quantity: boolean
           item_id: string
@@ -950,6 +967,8 @@ export type Database = {
           concentration_volume?: number | null
           concentration_volume_unit?: string | null
           created_at?: string
+          display_order?: number
+          dosage_presets?: number[] | null
           id?: string
           is_variable_quantity?: boolean
           item_id: string
@@ -969,6 +988,8 @@ export type Database = {
           concentration_volume?: number | null
           concentration_volume_unit?: string | null
           created_at?: string
+          display_order?: number
+          dosage_presets?: number[] | null
           id?: string
           is_variable_quantity?: boolean
           item_id?: string
@@ -1006,6 +1027,7 @@ export type Database = {
           default_location_id: string | null
           description: string | null
           id: string
+          instructions: string | null
           name: string
           updated_at: string
         }
@@ -1016,6 +1038,7 @@ export type Database = {
           default_location_id?: string | null
           description?: string | null
           id?: string
+          instructions?: string | null
           name: string
           updated_at?: string
         }
@@ -1026,6 +1049,7 @@ export type Database = {
           default_location_id?: string | null
           description?: string | null
           id?: string
+          instructions?: string | null
           name?: string
           updated_at?: string
         }
@@ -1166,6 +1190,181 @@ export type Database = {
           },
         ]
       }
+      sample_products: {
+        Row: {
+          active: boolean
+          created_at: string
+          dosage_form: string | null
+          expiration_warning_days: number | null
+          id: string
+          manufacturer_vendor: string | null
+          notes: string | null
+          product_name: string
+          reorder_threshold: number
+          strength: string | null
+          unit_of_measure_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          dosage_form?: string | null
+          expiration_warning_days?: number | null
+          id?: string
+          manufacturer_vendor?: string | null
+          notes?: string | null
+          product_name: string
+          reorder_threshold?: number
+          strength?: string | null
+          unit_of_measure_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          dosage_form?: string | null
+          expiration_warning_days?: number | null
+          id?: string
+          manufacturer_vendor?: string | null
+          notes?: string | null
+          product_name?: string
+          reorder_threshold?: number
+          strength?: string | null
+          unit_of_measure_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sample_products_unit_of_measure_id_fkey"
+            columns: ["unit_of_measure_id"]
+            isOneToOne: false
+            referencedRelation: "units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sample_lots: {
+        Row: {
+          created_at: string
+          created_by: string
+          expiration_date: string | null
+          id: string
+          lot_number: string | null
+          notes: string | null
+          received_date: string
+          representative_name: string | null
+          sample_product_id: string
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expiration_date?: string | null
+          id?: string
+          lot_number?: string | null
+          notes?: string | null
+          received_date?: string
+          representative_name?: string | null
+          sample_product_id: string
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expiration_date?: string | null
+          id?: string
+          lot_number?: string | null
+          notes?: string | null
+          received_date?: string
+          representative_name?: string | null
+          sample_product_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sample_lots_sample_product_id_fkey"
+            columns: ["sample_product_id"]
+            isOneToOne: false
+            referencedRelation: "sample_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sample_lots_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sample_lots_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sample_transactions: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          patient_reference: string | null
+          performed_by: string
+          quantity: number
+          sample_lot_id: string | null
+          sample_product_id: string
+          transaction_date: string
+          transaction_type: Database["public"]["Enums"]["sample_transaction_type"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_reference?: string | null
+          performed_by: string
+          quantity: number
+          sample_lot_id?: string | null
+          sample_product_id: string
+          transaction_date?: string
+          transaction_type: Database["public"]["Enums"]["sample_transaction_type"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_reference?: string | null
+          performed_by?: string
+          quantity?: number
+          sample_lot_id?: string | null
+          sample_product_id?: string
+          transaction_date?: string
+          transaction_type?: Database["public"]["Enums"]["sample_transaction_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sample_transactions_sample_lot_id_fkey"
+            columns: ["sample_lot_id"]
+            isOneToOne: false
+            referencedRelation: "sample_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sample_transactions_sample_product_id_fkey"
+            columns: ["sample_product_id"]
+            isOneToOne: false
+            referencedRelation: "sample_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sample_transactions_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       units_of_measure: {
         Row: {
           abbreviation: string
@@ -1195,6 +1394,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          shipping_minimum: number | null
           updated_at: string
           website: string | null
         }
@@ -1205,6 +1405,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          shipping_minimum?: number | null
           updated_at?: string
           website?: string | null
         }
@@ -1215,6 +1416,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          shipping_minimum?: number | null
           updated_at?: string
           website?: string | null
         }
@@ -1673,6 +1875,66 @@ export type Database = {
           },
         ]
       }
+      sample_lot_stock: {
+        Row: {
+          days_until_expiration: number | null
+          expiration_date: string | null
+          lot_id: string | null
+          lot_number: string | null
+          product_name: string | null
+          quantity_on_hand: number | null
+          received_date: string | null
+          representative_name: string | null
+          sample_product_id: string | null
+          status: Database["public"]["Enums"]["lot_status"] | null
+          vendor_id: string | null
+          vendor_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sample_lots_sample_product_id_fkey"
+            columns: ["sample_product_id"]
+            isOneToOne: false
+            referencedRelation: "sample_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sample_lots_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sample_product_stock: {
+        Row: {
+          active: boolean | null
+          dosage_form: string | null
+          expiration_warning_days: number | null
+          has_expired_lot: boolean | null
+          has_expiring_lot: boolean | null
+          manufacturer_vendor: string | null
+          next_expiration_date: string | null
+          notes: string | null
+          quantity_on_hand: number | null
+          reorder_threshold: number | null
+          sample_product_id: string | null
+          product_name: string | null
+          strength: string | null
+          unit_abbreviation: string | null
+          unit_of_measure_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sample_products_unit_of_measure_id_fkey"
+            columns: ["unit_of_measure_id"]
+            isOneToOne: false
+            referencedRelation: "units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       adjust_inventory: {
@@ -1855,6 +2117,39 @@ export type Database = {
         }
         Returns: string
       }
+      receive_sample: {
+        Args: {
+          p_sample_product_id: string
+          p_quantity: number
+          p_lot_number?: string | null
+          p_expiration_date?: string | null
+          p_vendor_id?: string | null
+          p_representative_name?: string | null
+          p_received_date?: string | null
+          p_notes?: string | null
+        }
+        Returns: Json
+      }
+      dispense_sample: {
+        Args: {
+          p_sample_product_id: string
+          p_quantity: number
+          p_patient_reference: string
+          p_sample_lot_id?: string | null
+          p_notes?: string | null
+          p_performed_at?: string
+        }
+        Returns: Json
+      }
+      adjust_sample: {
+        Args: {
+          p_sample_lot_id: string
+          p_quantity: number
+          p_increase: boolean
+          p_notes?: string | null
+        }
+        Returns: Json
+      }
     }
     Enums: {
       activity_module:
@@ -1865,6 +2160,7 @@ export type Database = {
         | "imaging"
         | "counts"
         | "system"
+        | "samples"
       activity_severity: "info" | "success" | "warning" | "critical"
       dispense_event_source: "manual" | "emr" | "import" | "api"
       imaging_authorization_status:
@@ -1883,6 +2179,11 @@ export type Database = {
       physical_count_status: "in_progress" | "completed" | "cancelled"
       purchase_order_draft_status: "draft" | "submitted" | "approved" | "ordered" | "cancelled"
       reorder_suggestion_action: "dismissed" | "reviewed"
+      sample_transaction_type:
+        | "RECEIVE"
+        | "DISPENSE"
+        | "ADJUSTMENT_INCREASE"
+        | "ADJUSTMENT_DECREASE"
       reason_code:
         | "vendor_delivery"
         | "internal_restock"
@@ -1906,7 +2207,12 @@ export type Database = {
         | "ADJUSTMENT_INCREASE"
         | "ADJUSTMENT_DECREASE"
         | "PHYSICAL_COUNT_CORRECTION"
-      user_role: "administrator" | "inventory_manager" | "staff" | "read_only"
+      user_role:
+        | "administrator"
+        | "inventory_manager"
+        | "staff"
+        | "read_only"
+        | "medic"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2042,6 +2348,12 @@ export const Constants = {
       physical_count_status: ["in_progress", "completed", "cancelled"],
       purchase_order_draft_status: ["draft", "submitted", "approved", "ordered", "cancelled"],
       reorder_suggestion_action: ["dismissed", "reviewed"],
+      sample_transaction_type: [
+        "RECEIVE",
+        "DISPENSE",
+        "ADJUSTMENT_INCREASE",
+        "ADJUSTMENT_DECREASE",
+      ],
       reason_code: [
         "vendor_delivery",
         "internal_restock",
@@ -2067,7 +2379,13 @@ export const Constants = {
         "ADJUSTMENT_DECREASE",
         "PHYSICAL_COUNT_CORRECTION",
       ],
-      user_role: ["administrator", "inventory_manager", "staff", "read_only"],
+      user_role: [
+        "administrator",
+        "inventory_manager",
+        "staff",
+        "read_only",
+        "medic",
+      ],
     },
   },
 } as const

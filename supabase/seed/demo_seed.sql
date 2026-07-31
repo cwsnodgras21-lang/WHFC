@@ -54,9 +54,9 @@ on conflict do nothing;
 -- ---------------------------------------------------------------------------
 -- Location (internal storage — a single clinic, not multiple sites)
 -- ---------------------------------------------------------------------------
-insert into public.locations (id, location_name, room, cabinet, shelf, bin, active) values
-  ('f4000000-0000-4000-8000-000000000001', 'Main Clinic — Supply Room', 'Supply Room', null, null, null, true),
-  ('f4000000-0000-4000-8000-000000000002', 'Main Clinic — Exam Room', 'Exam Room', null, null, null, true)
+insert into public.locations (id, location_name, active) values
+  ('f4000000-0000-4000-8000-000000000001', 'Main Clinic — Supply Room', true),
+  ('f4000000-0000-4000-8000-000000000002', 'Main Clinic — Exam Room', true)
 on conflict do nothing;
 
 -- ---------------------------------------------------------------------------
@@ -321,6 +321,49 @@ where lower(trim(i.item_name)) in (
   'alcohol prep pads',
   'tegaderm'
 ) and i.active
+on conflict do nothing;
+
+-- ---------------------------------------------------------------------------
+-- Demo sample products (medication samples module)
+--
+-- Sample products are master data, like items — safe to seed directly.
+-- Sample receipts/dispenses go through RPCs that require an authenticated
+-- profile, so (like inventory transactions) they are not seeded here; both
+-- products start at zero on-hand, which also demonstrates the low/out-of-stock
+-- sample alert without any additional data.
+-- ---------------------------------------------------------------------------
+insert into public.sample_products (
+  id, product_name, manufacturer_vendor, strength, dosage_form,
+  unit_of_measure_id, reorder_threshold, active, notes
+)
+select
+  v.id, v.product_name, v.manufacturer_vendor, v.strength, v.dosage_form,
+  u.id, v.reorder_threshold, true, v.notes
+from (
+  values
+    (
+      'f5000000-0000-4000-8000-000000000001'::uuid,
+      'Sample Amoxicillin 500mg',
+      'Generic Pharma Co.',
+      '500 mg',
+      'Capsule',
+      'EA',
+      10::numeric,
+      'Representative-provided starter pack.'
+    ),
+    (
+      'f5000000-0000-4000-8000-000000000002'::uuid,
+      'Sample Testosterone Cypionate 200mg/mL',
+      'Endocrine Samples Inc.',
+      '200 mg/mL',
+      'Injectable vial',
+      'VL',
+      3::numeric,
+      'Low reorder threshold — demonstrates the low-sample-stock alert at zero on hand.'
+    )
+) as v(id, product_name, manufacturer_vendor, strength, dosage_form, unit_abbr, reorder_threshold, notes)
+join public.units_of_measure u
+  on lower(trim(u.abbreviation)) = lower(trim(v.unit_abbr)) and u.active
 on conflict do nothing;
 
 -- Future EMR mapping example (inactive integration placeholder)

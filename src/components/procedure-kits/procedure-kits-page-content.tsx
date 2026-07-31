@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
+import { HelpButton } from "@/components/help/help-button";
 import { DataTable, DataTableShell } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
@@ -21,11 +22,14 @@ export function ProcedureKitsPageContent({
         title="Procedure kits"
         description="Configure dispense recipes that decrement multiple inventory items at once."
         actions={
-          data.canManage ? (
-            <LinkButton href="/procedure-kits/new" variant="primary">
-              New kit
-            </LinkButton>
-          ) : undefined
+          <>
+            {data.canManage ? (
+              <LinkButton href="/procedure-kits/new" variant="primary">
+                New kit
+              </LinkButton>
+            ) : null}
+            <HelpButton topic="procedure-kits" />
+          </>
         }
       />
 

@@ -1,4 +1,5 @@
 import { ConsumeInventoryForm } from "@/components/inventory/consume-inventory-form";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -12,6 +13,7 @@ export function ConsumePageContent({ data }: ConsumePageContentProps) {
   return (
     <div className="space-y-6">
       <PageHeader
+        actions={<HelpButton topic="consume" />}
         title="Use stock"
         description="Record supplies used in the clinic — pick the item, location, and quantity."
       />

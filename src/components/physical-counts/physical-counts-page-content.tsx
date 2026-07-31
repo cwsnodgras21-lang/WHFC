@@ -1,5 +1,6 @@
 import { CountHistoryTable } from "@/components/physical-counts/count-history-table";
 import { StartCountForm } from "@/components/physical-counts/start-count-form";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -18,6 +19,7 @@ export function PhysicalCountsPageContent({
       <PageHeader
         title="Physical counts"
         description="Count everything at a location, then update quantities to match what you found."
+        actions={<HelpButton topic="physical-counts" />}
       />
 
       {!data.canManage ? (

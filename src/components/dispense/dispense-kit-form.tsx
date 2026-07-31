@@ -239,6 +239,14 @@ export function DispenseKitForm({
                 </FormField>
               </div>
 
+              {selectedKit?.instructions ? (
+                <Alert
+                  variant="info"
+                  className="mt-4"
+                  message={selectedKit.instructions}
+                />
+              ) : null}
+
               {variableComponents.length > 0 ? (
                 <div className="form-grid mt-4">
                   {variableComponents.map((component) => (
@@ -269,6 +277,26 @@ export function DispenseKitForm({
                           {component.variableQuantityUnit}
                         </span>
                       </div>
+                      {component.dosagePresets?.length ? (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {component.dosagePresets.map((preset) => (
+                            <button
+                              key={preset}
+                              type="button"
+                              disabled={isPending}
+                              className="badge badge-default"
+                              onClick={() =>
+                                setAdministeredAmounts((prev) => ({
+                                  ...prev,
+                                  [component.id]: String(preset),
+                                }))
+                              }
+                            >
+                              {formatQuantity(preset)} {component.variableQuantityUnit}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
                     </FormField>
                   ))}
                 </div>

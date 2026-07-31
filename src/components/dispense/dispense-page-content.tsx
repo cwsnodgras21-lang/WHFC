@@ -1,4 +1,5 @@
 import { DispenseKitForm } from "@/components/dispense/dispense-kit-form";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -14,6 +15,7 @@ export function DispensePageContent({ data }: DispensePageContentProps) {
       <PageHeader
         title="Dispense kit"
         description="Decrement inventory for a configured procedure kit in one step."
+        actions={<HelpButton topic="dispense" />}
       />
 
       {!data.canDispense ? (

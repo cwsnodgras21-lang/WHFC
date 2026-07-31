@@ -9,7 +9,9 @@ supabase/
   config.toml           Local Supabase CLI configuration
   migrations/           Ordered SQL migrations (apply in filename order)
   seed/
-    demo_seed.sql       Demonstration reference data (local dev only)
+    demo_seed.sql          Demonstration reference data (local dev only)
+    demo_reset_inventory.sql  Resets demo transactions/lots between test runs
+    demo_promote_roles.sql    Promotes demo signups to administrator/medic
 ```
 
 ## Migrations (apply in order)
@@ -41,9 +43,21 @@ supabase/
 
 Direct `INSERT`/`UPDATE`/`DELETE` on `inventory_transactions` is revoked from `authenticated`. Inventory movements use RPC only.
 
+## Priority 1 launch migrations (2026-07-30)
+
+| File | Purpose |
+|---|---|
+| `20260730120001_medic_role_enum.sql` | Adds `medic` to `user_role` enum |
+| `20260730120002_medic_role_rls_rpc.sql` | Wires medic into `consume_inventory`/`dispense_kit` and own-row transaction RLS |
+| `20260730120003_procedure_kit_gaps.sql` | Kit `display_order`, `instructions`, component `dosage_presets`; medic dispense own-row RLS |
+| `20260730120004_samples.sql` | Medication samples module: `sample_products`, `sample_lots`, `sample_transactions`, RPCs, RLS, views |
+| `20260730120005_samples_activity_module.sql` | Adds `samples` to `activity_module` enum |
+| `20260730120006_expiration_settings.sql` | Org-level and category-level expiration warning defaults; view precedence resolution |
+| `20260730120007_vendor_reorder_config.sql` | `item_vendors.active`/`minimum_order_quantity`, `vendors.shipping_minimum` |
+
 ## Demo seed
 
-`seed/demo_seed.sql` loads **DEMO —** labeled categories, units, vendors, locations, and items. It does **not** create auth users, profiles, administrators, or inventory transactions.
+`seed/demo_seed.sql` loads **DEMO —** labeled categories, units, vendors, locations, items, procedure kits (including adjustable-dosage kits), and sample products. It does **not** create auth users, profiles, administrators, or inventory transactions — those require an authenticated profile via RPC. After creating demo accounts through the normal signup flow, run `seed/demo_promote_roles.sql` to assign administrator/medic roles.
 
 ## Apply to remote Supabase
 

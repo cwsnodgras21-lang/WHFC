@@ -14,12 +14,16 @@ const quantityField = z
 
 const warningDaysField = z
   .string()
-  .min(1, "Enter the number of days.")
+  .optional()
   .refine((value) => {
+    if (!value) return true;
     const parsed = Number(value);
     return Number.isInteger(parsed) && parsed > 0;
   }, "Enter a whole number of days greater than zero.")
-  .refine((value) => Number(value) <= 3650, "That is too many days.");
+  .refine(
+    (value) => !value || Number(value) <= 3650,
+    "That is too many days."
+  );
 
 const packQuantityField = z
   .string()
@@ -108,7 +112,13 @@ const itemPayloadSchema = z
     active: z.boolean(),
     trackExpiration: z.boolean(),
     trackLotNumber: z.boolean(),
-    expirationWarningDays: z.coerce.number().int().positive().max(3650),
+    expirationWarningDays: z.coerce
+      .number()
+      .int()
+      .positive()
+      .max(3650)
+      .nullable()
+      .optional(),
     packQuantity: z.coerce.number().int().positive().max(999_999).nullable().optional(),
   })
   .refine((data) => parLevelMeetsReorder(data.reorderPoint, data.parLevel), {
@@ -141,7 +151,9 @@ export function formValuesToCreateInput(
     active: values.active,
     trackExpiration: values.trackExpiration,
     trackLotNumber: values.trackLotNumber,
-    expirationWarningDays: Number(values.expirationWarningDays),
+    expirationWarningDays: values.expirationWarningDays
+      ? Number(values.expirationWarningDays)
+      : null,
     packQuantity: values.packQuantity?.trim()
       ? Number(values.packQuantity)
       : null,

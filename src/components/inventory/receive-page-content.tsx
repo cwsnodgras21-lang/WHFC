@@ -1,4 +1,5 @@
 import { ReceiveInventoryForm } from "@/components/inventory/receive-inventory-form";
+import { HelpButton } from "@/components/help/help-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -12,6 +13,7 @@ export function ReceivePageContent({ data }: ReceivePageContentProps) {
   return (
     <div className="space-y-6">
       <PageHeader
+        actions={<HelpButton topic="receive" />}
         title="Receive stock"
         description="Record a delivery — pick the item, location, and quantity received."
       />

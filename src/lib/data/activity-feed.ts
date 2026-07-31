@@ -26,6 +26,7 @@ export type ActivityFeedItem = {
 export const ACTIVITY_FILTER_MODULES = [
   "inventory",
   "imaging",
+  "samples",
   "purchasing",
   "expiration",
   "vendors",
@@ -39,6 +40,7 @@ export const ACTIVITY_MODULE_LABELS: Record<ActivityModule, string> = {
   imaging: "Imaging",
   counts: "Counts",
   system: "System",
+  samples: "Samples",
 };
 
 export type RecentActivityResult = {
